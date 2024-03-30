@@ -1,0 +1,5 @@
+- make tool bar > color picker, add pen size picker
+- make pen mode and eraser mode 
+- make it so you save drawing to localstorage
+- make it so you can save the drawing to a files
+- improve the proformance so you can make it even better
