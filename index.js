@@ -1,7 +1,10 @@
 window.addEventListener("load", function () {
 	resizeCanvas();
 	loadCanvasFromLocalStorage();
-	document.addEventListener("resize", resizeCanvas);
+});
+window.addEventListener("resize", function () {
+	resizeCanvas();
+	loadCanvasFromLocalStorage();
 });
 
 function setupPointerEvents() {
