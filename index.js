@@ -298,7 +298,17 @@ function loadCanvasFromLocalStorage() {
 	const img = new Image();
 	img.src = dataURL;
 	img.onload = function () {
-		ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+		ctx.drawImage(
+			img,
+			0,
+			0,
+			canvas.width,
+			canvas.height,
+			0,
+			0,
+			window.innerWidth,
+			window.innerHeight,
+		);
 	};
 }
 
