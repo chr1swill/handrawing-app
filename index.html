@@ -249,50 +249,6 @@
 						padding: 8px;
 					}
 				</style>
-				<script>
-					function setupSliderEvent() {
-						const inputs = document.querySelectorAll(
-							"input[type='radio'][name='mode']",
-						);
-						if (inputs === null) {
-							console.error("could not find inputs");
-						}
-
-						const overlay = document.querySelector("[data-slider-overlay]");
-						if (overlay === null) {
-							console.error(
-								"Could not find element with attribute: data-slider-overlay",
-							);
-							return;
-						}
-
-						const span = overlay.querySelector("span");
-						if (span === null) {
-							console.error("Could not find span inside overlay");
-							return;
-						}
-
-						let i = 0;
-						while (i < inputs.length) {
-							inputs[i].onchange = function (e) {
-								switch (e.target.id) {
-									case "mode-pencil":
-										overlay.style.justifyContent = "flex-start";
-										span.style.transform = "translateX(4px)";
-										break;
-									case "mode-eraser":
-										overlay.style.justifyContent = "flex-end";
-										span.style.transform = "translateX(-4px)";
-										break;
-									default:
-										console.log("Unhandled target:", e.target.id);
-								}
-							};
-							i++;
-						}
-					}
-					setupSliderEvent();
-				</script>
 			</div>
 			<style>
 				canvas {

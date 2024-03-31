@@ -301,3 +301,52 @@ function loadCanvasFromLocalStorage() {
 		ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 	};
 }
+
+function setupSliderEvent() {
+	const inputs = document.querySelectorAll("input[type='radio'][name='mode']");
+	if (inputs === null) {
+		console.error("could not find inputs");
+	}
+
+	const overlay = /**@type{HTMLElement|null}*/ (
+		document.querySelector("[data-slider-overlay]")
+	);
+	if (overlay === null) {
+		console.error("Could not find element with attribute: data-slider-overlay");
+		return;
+	}
+
+	const span = overlay.querySelector("span");
+	if (span === null) {
+		console.error("Could not find span inside overlay");
+		return;
+	}
+
+	let i = 0;
+	while (i < inputs.length) {
+		const input = /**@type{HTMLElement}*/ (inputs[i]);
+		input.onchange = function (e) {
+			if (e.target === null || !(e.target instanceof HTMLElement)) {
+				console.error("Element targeted was not an HTMLElement: ", e.target);
+				return;
+			}
+
+			switch (e.target.id) {
+				case "mode-pencil":
+					overlay.style.justifyContent = "flex-start";
+					span.style.transform = "translateX(4px)";
+					ctx.globalCompositeOperation = "source-over";
+					break;
+				case "mode-eraser":
+					overlay.style.justifyContent = "flex-end";
+					span.style.transform = "translateX(-4px)";
+					ctx.globalCompositeOperation = "destination-out";
+					break;
+				default:
+					console.log("Unhandled target:", e.target.id);
+			}
+		};
+		i++;
+	}
+}
+setupSliderEvent();
