@@ -1,4 +1,5 @@
-- make pen mode and eraser mode 
+-- fix bug where reloading form localstorage on ipad distorts the image
+
 - make it so you can save the drawing to a files
 - make tool bar > color picker, add pen size picker
 - improve the proformance so you can make it even better
