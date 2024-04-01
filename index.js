@@ -284,7 +284,7 @@ clearButton.onclick = function () {
 
 function saveCanvasToLocalStorage() {
 	try {
-		localStorage.setItem("dataURL", canvas.toDataURL());
+		localStorage.setItem("dataURL", canvas.toDataURL("image/jpg", 1.0));
 	} catch (e) {
 		console.error("Storage failed: " + e);
 		return;
