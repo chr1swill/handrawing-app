@@ -360,3 +360,47 @@ function setupSliderEvent() {
 	}
 }
 setupSliderEvent();
+
+/**
+ * https://stackoverflow.com/questions/13405129/create-and-save-a-file-with-javascript
+ * @param{string} data
+ * @param{string} filename
+ * @param{"text/plain"} type
+ */
+function downloadData(data, filename, type) {
+	const file = new Blob([data], { type: type });
+	//@ts-ignore
+	if (window.navigator.msSaveOrOpenBlob) {
+		//IE10+
+		//@ts-ignore
+		window.navigator.msSaveOrOpenBlob(file, filename);
+	} else {
+		const a = document.createElement("a");
+		const url = URL.createObjectURL(file);
+		a.href = url;
+		a.download = filename;
+		a.style.display = "none";
+		document.body.appendChild(a);
+		a.click();
+		// Clean up garbage
+		const st = setTimeout(function () {
+			document.body.removeChild(a);
+			window.URL.revokeObjectURL(url);
+			clearTimeout(st);
+		}, 0);
+	}
+}
+
+function saveCanvasDataToFile() {
+	const data = localStorage.getItem("dataURL");
+	if (data === null) {
+		console.error("Failed to access canvas data form localStorage");
+		return;
+	}
+	const filename = "canvas.txt";
+	const type = "text/plain";
+
+	downloadData(data, filename, type);
+}
+
+function loadCanvasFromFile() {}
