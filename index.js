@@ -361,46 +361,53 @@ function setupSliderEvent() {
 }
 setupSliderEvent();
 
-/**
- * https://stackoverflow.com/questions/13405129/create-and-save-a-file-with-javascript
- * @param{string} data
- * @param{string} filename
- * @param{"text/plain"} type
- */
-function downloadData(data, filename, type) {
-	const file = new Blob([data], { type: type });
-	//@ts-ignore
-	if (window.navigator.msSaveOrOpenBlob) {
-		//IE10+
-		//@ts-ignore
-		window.navigator.msSaveOrOpenBlob(file, filename);
-	} else {
-		const a = document.createElement("a");
-		const url = URL.createObjectURL(file);
-		a.href = url;
-		a.download = filename;
-		a.style.display = "none";
-		document.body.appendChild(a);
-		a.click();
-		// Clean up garbage
-		const st = setTimeout(function () {
-			document.body.removeChild(a);
-			window.URL.revokeObjectURL(url);
-			clearTimeout(st);
-		}, 0);
-	}
+//@ts-ignore
+async function writeFile(fileHandle) {
+	const writable = await fileHandle.createWritable();
+	canvas.toBlob(async function (blob) {
+		let wroteBlob;
+		try {
+			wroteBlob = await writable.write(blob);
+		} catch (err) {
+			writable.close();
+			console.error("Error: ", err);
+			return null;
+		}
+
+		if (wroteBlob === null) {
+			writable.close();
+			console.error("Failed to write blob");
+			return null;
+		}
+		await writable.close();
+		alert("Drawing saved succefully!");
+	}, "text/plain");
 }
 
-function saveCanvasDataToFile() {
-	const data = localStorage.getItem("dataURL");
-	if (data === null) {
-		console.error("Failed to access canvas data form localStorage");
-		return;
-	}
-	const filename = "canvas.txt";
-	const type = "text/plain";
-
-	downloadData(data, filename, type);
+async function saveToFile() {
+	const button = document.getElementById("saveToFile");
+	if (button === null) return;
+	button.onclick = async function () {
+		if ("showSaveFilePicker" in window) {
+			try {
+				//@ts-ignore
+				const fileHandle = await window.showSaveFilePicker({
+					types: [
+						{
+							description: "TEXT data",
+							accept: { "text/plain": [".txt"] },
+						},
+					],
+				});
+				const saveFile = await writeFile(fileHandle);
+				if (saveFile === null) console.error("Failed to save File");
+			} catch (err) {
+				console.error("Error: ", err);
+			}
+		} else {
+			console.error("FileSystem API is not supported in this browser");
+			alert("FileSystem API not supported");
+		}
+	};
 }
-
-function loadCanvasFromFile() {}
+saveToFile();
