@@ -276,15 +276,27 @@ clearButton.onclick = function () {
 	document.body.append(container);
 };
 
-//const saveButton = /**@type{HTMLButtonElement}*/ (
-//document.getElementById("saveButton")
-//);
-// make this have some sort of sucess messgage the gets displayed
-//saveButton.onclick = saveCanvasToLocalStorage;
-
 function saveCanvasToLocalStorage() {
+	const toDataURL = canvas.toDataURL("image/jpg", 1.0);
+	if (toDataURL === null) {
+		console.error("Could not create a dataUrl form canvas data");
+		let prompt = window.prompt(
+			"Failed to save canvas to local storage, would you like to save it to a file to prevent data loss?(type 'yes' to confirm)",
+			"yes",
+		);
+		if (
+			prompt !== "y" &&
+			prompt !== "yes" &&
+			prompt !== "Yes" &&
+			prompt !== "YES"
+		) {
+			return;
+		}
+		saveToFile();
+	}
+
 	try {
-		localStorage.setItem("dataURL", canvas.toDataURL("image/jpg", 1.0));
+		localStorage.setItem("dataURL", toDataURL);
 	} catch (e) {
 		console.error("Storage failed: " + e);
 		return;
@@ -391,29 +403,33 @@ async function writeFile(fileHandle) {
 }
 
 async function saveToFile() {
+	if ("showSaveFilePicker" in window) {
+		try {
+			//@ts-ignore
+			const fileHandle = await window.showSaveFilePicker({
+				types: [
+					{
+						description: "TEXT data",
+						accept: { "text/plain": [".txt"] },
+					},
+				],
+			});
+			const saveFile = await writeFile(fileHandle);
+			if (saveFile === null) console.error("Failed to save File");
+		} catch (err) {
+			console.error("Error: ", err);
+		}
+	} else {
+		console.error("FileSystem API is not supported in this browser");
+		alert("FileSystem API not supported");
+	}
+}
+
+function setupSaveButton() {
 	const button = document.getElementById("saveToFile");
 	if (button === null) return;
 	button.onclick = async function () {
-		if ("showSaveFilePicker" in window) {
-			try {
-				//@ts-ignore
-				const fileHandle = await window.showSaveFilePicker({
-					types: [
-						{
-							description: "TEXT data",
-							accept: { "text/plain": [".txt"] },
-						},
-					],
-				});
-				const saveFile = await writeFile(fileHandle);
-				if (saveFile === null) console.error("Failed to save File");
-			} catch (err) {
-				console.error("Error: ", err);
-			}
-		} else {
-			console.error("FileSystem API is not supported in this browser");
-			alert("FileSystem API not supported");
-		}
+		await saveToFile();
 	};
 }
-saveToFile();
+setupSaveButton();
