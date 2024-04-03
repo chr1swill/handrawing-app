@@ -277,7 +277,7 @@ clearButton.onclick = function () {
 };
 
 function saveCanvasToLocalStorage() {
-	const toDataURL = canvas.toDataURL("image/jpg", 1.0);
+	const toDataURL = canvas.toDataURL("image/jpeg", 1.0);
 	if (toDataURL === null) {
 		console.error("Could not create a dataUrl form canvas data");
 		let prompt = window.prompt(
