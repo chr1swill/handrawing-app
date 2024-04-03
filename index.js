@@ -364,24 +364,30 @@ setupSliderEvent();
 //@ts-ignore
 async function writeFile(fileHandle) {
 	const writable = await fileHandle.createWritable();
-	canvas.toBlob(async function (blob) {
-		let wroteBlob;
-		try {
-			wroteBlob = await writable.write(blob);
-		} catch (err) {
-			writable.close();
-			console.error("Error: ", err);
-			return null;
-		}
+	const data = localStorage.getItem("dataURL");
+	if (data === null) {
+		console.error("There is no data in localStorage key: 'dataURL'");
+		return null;
+	}
 
-		if (wroteBlob === null) {
-			writable.close();
-			console.error("Failed to write blob");
-			return null;
-		}
-		await writable.close();
-		alert("Drawing saved succefully!");
-	}, "text/plain");
+	let wroteData;
+
+	try {
+		wroteData = await writable.write(data);
+	} catch (err) {
+		writable.close();
+		console.error("Error: ", err);
+		return null;
+	}
+
+	if (wroteData === null) {
+		writable.close();
+		console.error("Failed to write data");
+		return null;
+	}
+
+	await writable.close();
+	alert("Drawing save successfully!");
 }
 
 async function saveToFile() {
