@@ -402,6 +402,22 @@ async function writeFile(fileHandle) {
 	alert("Drawing save successfully!");
 }
 
+/**
+ * @param{string} data
+ */
+function fallbackFileDownloader(data) {
+	const blob = new Blob([data], { type: "text/plain" });
+	const url = URL.createObjectURL(blob);
+	const a = document.createElement("a");
+	a.href = url;
+	a.style.display = "none";
+	a.download = "canvasData.txt";
+	document.body.appendChild(a);
+	a.click();
+	document.body.removeChild(a);
+	URL.revokeObjectURL(url);
+}
+
 async function saveToFile() {
 	if ("showSaveFilePicker" in window) {
 		try {
@@ -420,8 +436,13 @@ async function saveToFile() {
 			console.error("Error: ", err);
 		}
 	} else {
-		console.error("FileSystem API is not supported in this browser");
-		alert("FileSystem API not supported");
+		console.log("FileSystem API no supported, using fallback");
+		const data = localStorage.getItem("dataURL");
+		if (data === null) {
+			console.error("Failed to access localStorage key: dataURL");
+			return;
+		}
+		fallbackFileDownloader(data);
 	}
 }
 
