@@ -1,3 +1,2 @@
-- make it so you can load canvas for a file
 - make tool bar > color picker, add pen size picker
 - improve the proformance so you can make it even better

@@ -458,3 +458,58 @@ function setupSaveButton() {
 	};
 }
 setupSaveButton();
+
+function setupUploadDrawingInput() {
+	const uploadFileInput = /**@type{HTMLInputElement|null}*/ (
+		document.getElementById("uploadFile")
+	);
+	if (uploadFileInput === null) {
+		console.error("Could not find file upload input");
+		return;
+	}
+
+	uploadFileInput.onchange = function () {
+		if (uploadFileInput.files === null || uploadFileInput.files.length !== 1) {
+			console.error("No file has been uploaded");
+			return;
+		}
+		const fileReader = new FileReader();
+
+		fileReader.onload = function (e) {
+			const dataURL = e.target?.result;
+			if (typeof dataURL !== "string") {
+				console.error("File content is not valid string");
+				return;
+			}
+
+			if (dataURL.startsWith("data:image/")) {
+				const confirm = window.confirm(
+					"Would you like to replace you canvas with the content of your file",
+				);
+
+				if (confirm) {
+					try {
+						localStorage.setItem("dataURL", dataURL);
+					} catch (err) {
+						console.error("Error: ", err);
+					}
+
+					ctx?.clearRect(0, 0, canvas.width, canvas.height);
+					loadCanvasFromLocalStorage();
+				}
+			} else {
+				console.error("Uploaded file is not a valid image dataURL");
+				const start = dataURL.slice(0, 50);
+				console.log("The start: ", start);
+				return;
+			}
+		};
+
+		fileReader.onerror = function () {
+			console.error("An error occured while reading the file");
+		};
+
+		fileReader.readAsText(uploadFileInput.files[0]);
+	};
+}
+setupUploadDrawingInput();
