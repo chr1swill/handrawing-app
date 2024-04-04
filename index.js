@@ -277,6 +277,7 @@ clearButton.onclick = function () {
 };
 
 function saveCanvasToLocalStorage() {
+	// keep it in ('image/png', 1.0) error happen when quaility is reduced
 	const toDataURL = canvas.toDataURL("image/png", 1.0);
 	if (toDataURL === null) {
 		console.error("Could not create a dataUrl form canvas data");
