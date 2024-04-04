@@ -305,7 +305,10 @@ function saveCanvasToLocalStorage() {
 
 function loadCanvasFromLocalStorage() {
 	const dataURL = localStorage.getItem("dataURL");
-	if (dataURL === null) return;
+	if (dataURL === null) {
+		console.error("Could not access canvas data form local storage");
+		return;
+	}
 
 	const img = new Image();
 	img.src = dataURL;
