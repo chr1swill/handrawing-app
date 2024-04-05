@@ -157,7 +157,6 @@ function sketch(event) {
 	if (ctx) {
 		ctx.beginPath();
 
-		ctx.lineWidth = 3;
 		ctx.lineCap = "round";
 		ctx.strokeStyle = "black";
 
@@ -513,3 +512,22 @@ function setupUploadDrawingInput() {
 	};
 }
 setupUploadDrawingInput();
+
+function setupStrokeWeightInput() {
+	const input =
+		/**type{HTMLInputElement|null}*/ document.getElementById(
+			"selectStrokeWeight",
+		);
+	if (input === null || !(input instanceof HTMLInputElement)) {
+		console.error("Could not access element with the id: selectStrokeWeight");
+		return;
+	}
+
+	//initiziation of the stoke width value
+	ctx.lineWidth = parseInt(input.value);
+
+	input.onchange = function () {
+		ctx.lineWidth = parseInt(input.value);
+	};
+}
+setupStrokeWeightInput();
