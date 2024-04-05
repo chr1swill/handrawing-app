@@ -149,6 +149,12 @@ function stopDrawing() {
 }
 
 /**
+ * @type{number}
+ * init a line with var that can be updated by the range input
+ */
+let lineWidth;
+
+/**
  * @param {MouseEvent|TouchEvent} event
  * draw the path which you mouse follow when it is pressed down
  */
@@ -157,6 +163,7 @@ function sketch(event) {
 	if (ctx) {
 		ctx.beginPath();
 
+		ctx.lineWidth = lineWidth;
 		ctx.lineCap = "round";
 		ctx.strokeStyle = "black";
 
@@ -524,10 +531,11 @@ function setupStrokeWeightInput() {
 	}
 
 	//initiziation of the stoke width value
-	ctx.lineWidth = parseInt(input.value);
+	lineWidth = 5;
 
 	input.onchange = function () {
-		ctx.lineWidth = parseInt(input.value);
+		lineWidth = parseInt(input.value);
+		ctx.lineWidth = lineWidth;
 	};
 }
 setupStrokeWeightInput();
