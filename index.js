@@ -107,6 +107,40 @@
 	let draw = false;
 
 	/**
+	 * @param{TouchEvent} event
+	 * @param{DOMRect} rect
+	 * @param{number} ratio
+	 */
+	function updateCoodOnTouchEvents(event, rect, ratio) {
+		coord.x =
+			(((event.touches[0].clientX - rect.left) / rect.width) * canvas.width) /
+			ratio;
+		coord.y =
+			(((event.touches[0].clientY - rect.top) / rect.height) * canvas.height) /
+			ratio;
+	}
+
+	/**
+	 * @param{MouseEvent} event
+	 * @param{DOMRect} rect
+	 * @param{number} ratio
+	 */
+	function updateCoodOnMouseEvent(event, rect, ratio) {
+		coord.x =
+			(((event.clientX - rect.left) / rect.width) * canvas.width) / ratio;
+		coord.y =
+			(((event.clientY - rect.top) / rect.height) * canvas.height) / ratio;
+	}
+
+	/**
+	 * @typedef{Object.<string, Function>} JumpTableT
+	 */
+	const EventTypeJumpTable = /**@type{JumpTableT}*/ ({
+		TouchEvent: updateCoodOnTouchEvents,
+		MouseEvent: updateCoodOnMouseEvent,
+	});
+
+	/**
 	 * @param {MouseEvent|TouchEvent} event
 	 * updates the coordinates of the mouse to
 	 * match to be stored in the coord var when event
@@ -114,23 +148,11 @@
 	 */
 	function getPositions(event) {
 		const rect = canvas.getBoundingClientRect(); // Get the bounding rectangle of the canvas
-		const ratio = window.devicePixelRatio || 1;
-		if (event instanceof TouchEvent) {
-			// Calculate the x, y coordinates with scaling for device pixel ratio
-			coord.x =
-				(((event.touches[0].clientX - rect.left) / rect.width) * canvas.width) /
-				ratio;
-			coord.y =
-				(((event.touches[0].clientY - rect.top) / rect.height) *
-					canvas.height) /
-				ratio;
-		} else {
-			// Adjust mouse event coordinates similarly if needed
-			coord.x =
-				(((event.clientX - rect.left) / rect.width) * canvas.width) / ratio;
-			coord.y =
-				(((event.clientY - rect.top) / rect.height) * canvas.height) / ratio;
-		}
+		const ratio = window.devicePixelRatio;
+
+		const eventType = event.constructor.name;
+
+		EventTypeJumpTable[eventType](event, rect, ratio);
 	}
 
 	/**
