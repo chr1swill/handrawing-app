@@ -83,7 +83,14 @@
 	const canvas = /**@type{HTMLCanvasElement}*/ (
 		document.querySelector("#myCanvas")
 	);
-	const ctx = /**@type{CanvasRenderingContext2D}*/ (canvas.getContext("2d"));
+	const ctx = /**@type{CanvasRenderingContext2D}*/ (
+		canvas.getContext("2d", {
+			alpha: true,
+			colorSpace: "srgb",
+			desychroized: true,
+			willReadFrequently: true,
+		})
+	);
 
 	function resizeCanvas() {
 		if (ctx) {
