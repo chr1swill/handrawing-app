@@ -87,7 +87,7 @@
 		canvas.getContext("2d", {
 			alpha: true,
 			colorSpace: "srgb",
-			desychroized: true,
+			desynchronized: false,
 			willReadFrequently: true,
 		})
 	);
