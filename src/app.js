@@ -323,6 +323,9 @@
 	}
 
 	function main() {
+		// FOR TESTING
+		localStorage.clear();
+
 		const canvas = /**@type{HTMLCanvasElement | null}*/ (
 			document.getElementById("myCanvas")
 		);
