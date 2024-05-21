@@ -1,6 +1,3 @@
-import "./types/types";
-import { DrawingAction } from "./types/types";
-
 /**
  * @typedef{import('./types/types').Point} Point
  * @typedef{import('./types/types').Points} Points
