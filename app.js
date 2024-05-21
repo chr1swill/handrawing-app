@@ -22,11 +22,20 @@ import { DrawingAction } from "./types/types";
 		/**@type{boolean}*/
 		#isDrawing;
 
-		/**@type{string | null}*/
+		/**@type{number}*/
 		#screenRatio;
 
 		/**@type{DOMRect}*/
 		#canvasRect;
+
+		/**@type{Point}*/
+		#position = { x: 0, y: 0 };
+
+		/**@type{Points}*/
+		#points = [];
+
+        /**@type{Stroke}*/
+        #stroke;
 
 		/**
 		 * @param{HTMLCanvasElement} canvas
@@ -42,17 +51,34 @@ import { DrawingAction } from "./types/types";
 
 			this.#isDrawing = false;
 
-			this.#screenRatio = localStorage.getItem(localStorageKeys.screenRatio);
-			if (this.#screenRatio === null) {
-				this.#screenRatio = window.devicePixelRatio.toString();
+            let storedDrawingMode = localStorage.getItem(localStorageKeys.drawingMode);
+            if (storedDrawingMode === null) {
+
+            }
+            let storedStrokeWeight = localStorage.getItem(localStorageKeys.strokeWeight);
+            let storedColor = localStorage.getItem(localStorageKeys.strokeColor);
+
+            /**@type{Stroke}*/
+            this.#stroke = { points: [], drawingMode: "", weight: 0, color: ""};
+
+			const screenRatioAsString = localStorage.getItem(
+				localStorageKeys.screenRatio,
+			);
+			if (screenRatioAsString === null) {
+				this.#screenRatio = window.devicePixelRatio;
 				try {
-					localStorage.setItem(localStorageKeys.screenRatio, this.#screenRatio);
+					localStorage.setItem(
+						localStorageKeys.screenRatio,
+						JSON.stringify(this.#screenRatio),
+					);
 				} catch (e) {
 					console.error(e);
 					throw new Error(
 						"Could not save current screen ratio an error occurred in the process",
 					);
 				}
+			} else {
+				this.#screenRatio = parseFloat(screenRatioAsString);
 			}
 
 			this.#canvasRect = canvas.getBoundingClientRect();
@@ -86,13 +112,36 @@ import { DrawingAction } from "./types/types";
 		/**
 		 * @param{PointerEvent} event
 		 */
-		#getPostions(event) {}
+		#getPostions(event) {
+			this.#position.x =
+				(((event.clientX - this.#canvasRect.left) / this.#canvasRect.width) *
+					this.canvas.width) /
+				this.#screenRatio;
 
-		#startDrawing() {
-			this.#isDrawing = true;
+			this.#position.y =
+				(((event.clientY - this.#canvasRect.top) / this.#canvasRect.height) *
+					this.canvas.height) /
+				this.#screenRatio;
+
+			this.#points.push(this.#position);
 		}
 
-		#stopDrawing() {}
+		/**
+		 * @param{PointerEvent} event
+		 */
+		#startDrawing(event) {
+			this.#isDrawing = true;
+			this.#getPostions(event);
+		}
+
+		#stopDrawing() {
+			this.#isDrawing = false;
+            this.#stroke = {
+
+            while (this.#points.length > 0) {
+                this.#points.pop();
+            }
+		}
 
 		#draw() {}
 
@@ -103,11 +152,13 @@ import { DrawingAction } from "./types/types";
 				);
 			}
 
-			const ratio = window.devicePixelRatio;
-			this.#screenRatio = ratio.toString();
+			this.#screenRatio = window.devicePixelRatio;
 
 			try {
-				localStorage.setItem(localStorageKeys.screenRatio, this.#screenRatio);
+				localStorage.setItem(
+					localStorageKeys.screenRatio,
+					JSON.stringify(this.#screenRatio),
+				);
 			} catch (e) {
 				console.error(e);
 				throw new Error(
@@ -115,15 +166,26 @@ import { DrawingAction } from "./types/types";
 				);
 			}
 
-			this.#canvasRect;
+			this.#canvasRect = this.canvas.getBoundingClientRect();
+			try {
+				localStorage.setItem(
+					localStorageKeys.canvasRect,
+					JSON.stringify(this.#canvasRect),
+				);
+			} catch (e) {
+				console.error(e);
+				throw new Error(
+					`An error occured when attempting to update the value of localStorage key: ${localStorageKeys.canvasRect}`,
+				);
+			}
 
-			const width = window.innerWidth * ratio;
-			const height = window.innerHeight * ratio;
+			const width = window.innerWidth * this.#screenRatio;
+			const height = window.innerHeight * this.#screenRatio;
 			this.ctx.canvas.style.width = window.innerWidth + "px";
 			this.ctx.canvas.style.height = window.innerHeight + "px";
 			this.ctx.canvas.width = width;
 			this.ctx.canvas.height = height;
-			this.ctx.scale(ratio, ratio); // Adjust drawing scale to account for the increased canvas size
+			this.ctx.scale(this.#screenRatio, this.#screenRatio); // Adjust drawing scale to account for the increased canvas size
 		}
 	}
 

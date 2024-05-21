@@ -12,7 +12,7 @@ export const enum DrawingAction {
 
 export type Stroke = {
 	points: Points;
-	action: DrawingAction;
+	drawingMode: DrawingAction;
 	weight: number;
 	color: string;
 };
