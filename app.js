@@ -323,6 +323,27 @@ import { DrawingAction } from "./types/types";
 			console.error("Could not find element with id: #myCanvas");
 			return;
 		}
+
+		const ctx = canvas.getContext("2d");
+		if (ctx === null) {
+			console.error("Invalid context was provided, could the create context");
+			return;
+		}
+
+		const toolBar = /**@type{HTMLDivElement | null}*/ (
+			document.querySelector("[data-tool-bar]")
+		);
+		if (toolBar === null) {
+			console.error(
+				"Could not find element with the data attribute: [data-tool-bar]",
+			);
+			return;
+		}
+
+		const defaultCavasName = "DEFAULT_CANVAS";
+
+		const drawingApp = new DrawingApp(canvas, ctx, toolBar, defaultCavasName);
+		drawingApp;
 	}
 	main();
 })();
