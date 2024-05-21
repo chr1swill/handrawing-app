@@ -194,7 +194,13 @@ import "./types/types";
 	}
 
 	/**
-	 * @type{number}
+	 * @type{number}"exclude": [
+    "node_modules"
+  ],
+  "include": [
+    "./types/**/*",
+    "**/*.js"
+  ]
 	 * init a line with var that can be updated by the range input
 	 */
 	let lineWidth;
