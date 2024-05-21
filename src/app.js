@@ -268,6 +268,7 @@
 			if (!this.#isDrawing) return;
 			this.ctx.lineWidth = this.#strokeWeight;
 			this.ctx.strokeStyle = this.#strokeColor;
+			this.ctx.lineCap = "round";
 			this.ctx.beginPath();
 			this.ctx.moveTo(this.#position.x, this.#position.y);
 			this.#getPostions(event);
