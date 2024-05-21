@@ -258,7 +258,15 @@ import { DrawingAction } from "./types/types";
 			}
 		}
 
-		#draw() {}
+		/**@param{PointerEvent} event*/
+		#draw(event) {
+			if (!this.#isDrawing) return;
+			this.ctx.beginPath();
+			this.ctx.moveTo(this.#position.x, this.#position.y);
+			this.#getPostions(event);
+			this.ctx.lineTo(this.#position.x, this.#position.y);
+			this.ctx.stroke();
+		}
 
 		#resizeCanvas() {
 			if (this.ctx === null) {
