@@ -1,3 +1,4 @@
+//ts-ignore
 /**
  * @typedef{import('../types/types').Point} PointT
  * @typedef{import('../types/types').Points} PointsT
