@@ -15,6 +15,63 @@ import { DrawingAction } from "./types/types";
 		#isDrawing;
 
 		/**@type{string | null}*/
+		#screenRatio;
+
+		/**
+		 * @param{HTMLCanvasElement} canvas
+		 * @param{CanvasRenderingContext2D} ctx
+		 */
+		constructor(canvas, ctx) {
+			if (!canvas || !ctx)
+				throw new ReferenceError(
+					"Invalid paramater of class, could not instantiate",
+				);
+			this.canvas = canvas;
+			this.ctx = ctx;
+
+			this.#isDrawing = false;
+
+			this.#screenRatio = localStorage.getItem("currentScreenRatio");
+			if (this.#screenRatio === null) {
+				this.#screenRatio = window.devicePixelRatio.toString();
+				try {
+					localStorage.setItem("currentScreenRatio", this.#screenRatio);
+				} catch (e) {
+					console.error(e);
+					throw new Error(
+						"Could not save current screen ratio an error occurred in the process",
+					);
+				}
+			}
+
+			this.canvas.addEventListener(
+				"pointerdown",
+				this.#startDrawing.bind(this),
+			);
+			this.canvas.addEventListener("pointerup", this.#stopDrawing.bind(this));
+			this.canvas.addEventListener(
+				"pointercancel",
+				this.#stopDrawing.bind(this),
+			);
+			this.canvas.addEventListener("pointermove", this.#draw.bind(this));
+			window.addEventListener("resize", this.#resizeCanvas.bind(this));
+
+			this.#resizeCanvas();
+		}
+
+		#startDrawing() {
+			this.#isDrawing = true;
+		}
+
+		#stopDrawing() {}
+
+		#draw() {}
+
+		#resizeCanvas() {}
+	}
+
+	class DrawingSettingContols {
+		/**@type{string | null}*/
 		#strokeWeight;
 
 		/**@type{string | null}*/
@@ -23,23 +80,22 @@ import { DrawingAction } from "./types/types";
 		/**@type{string | null}*/
 		#drawingMode;
 
-		/**@type{string | null}*/
-		#screenRatio;
-
-		/**@param{string} canvasId*/
-		constructor(canvasId) {
-			this.canvas = /**@type{HTMLCanvasElement | null}*/ (
-				document.getElementById(canvasId)
-			);
-			if (this.canvas === null) {
+		/**
+		 * All params are assumed to be null checked
+		 * before being pass into the class
+		 *
+		 * @param{HTMLCanvasElement} canvas
+		 * @param{CanvasRenderingContext2D} ctx
+		 * @param{HTMLDivElement} toolBar
+		 */
+		constructor(canvas, ctx, toolBar) {
+			if (!canvas || !ctx || !toolBar)
 				throw new ReferenceError(
-					`Could not find element with the id:  ${canvasId}`,
+					"Invalid paramater of class, could not instantiate",
 				);
-			}
-
-			this.ctx = this.canvas.getContext("2d");
-
-			this.#isDrawing = false;
+			this.canvas = canvas;
+			this.ctx = ctx;
+			this.toolBar = toolBar;
 
 			this.#strokeWeight = localStorage.getItem("currentStrokeWeight");
 			if (this.#strokeWeight === null) {
@@ -80,42 +136,17 @@ import { DrawingAction } from "./types/types";
 				}
 			}
 
-			this.#screenRatio = localStorage.getItem("currentScreenRatio");
-			if (this.#screenRatio === null) {
-				this.#screenRatio = window.devicePixelRatio.toString();
-				try {
-					localStorage.setItem("currentScreenRatio", this.#screenRatio);
-				} catch (e) {
-					console.error(e);
-					throw new Error(
-						"Could not save current screen ratio an error occurred in the process",
-					);
-				}
-			}
-
-			this.canvas.addEventListener(
-				"pointerdown",
-				this.#startDrawing.bind(this),
+			toolBar.addEventListener(
+				"change",
+				this.#handleChangeEventOnToolBar.bind(this),
 			);
-			this.canvas.addEventListener("pointerup", this.#stopDrawing.bind(this));
-			this.canvas.addEventListener(
-				"pointercancel",
-				this.#stopDrawing.bind(this),
+			toolBar.addEventListener(
+				"click",
+				this.#handleClickEventOnToolBar.bind(this),
 			);
-			this.canvas.addEventListener("pointermove", this.#draw.bind(this));
-			window.addEventListener("resize", this.#resizeCanvas.bind(this));
-
-			this.#resizeCanvas();
 		}
 
-		#startDrawing() {
-			this.#isDrawing = true;
-		}
-
-		#stopDrawing() {}
-
-		#draw() {}
-
-		#resizeCanvas() {}
+		#handleChangeEventOnToolBar() {}
+		#handleClickEventOnToolBar() {}
 	}
 })();
