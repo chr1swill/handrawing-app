@@ -81,7 +81,7 @@
 				localStorageKeys.strokeWeight,
 			);
 			if (storedStrokeWeight === null) {
-				storedStrokeWeight = 1;
+				storedStrokeWeight = 5;
 				try {
 					localStorage.setItem(
 						localStorageKeys.strokeWeight,
@@ -266,6 +266,8 @@
 		/**@param{PointerEvent} event*/
 		#draw(event) {
 			if (!this.#isDrawing) return;
+			this.ctx.lineWidth = this.#strokeWeight;
+			this.ctx.strokeStyle = this.#strokeColor;
 			this.ctx.beginPath();
 			this.ctx.moveTo(this.#position.x, this.#position.y);
 			this.#getPostions(event);
