@@ -202,6 +202,7 @@
 			);
 
 			window.addEventListener("resize", this.#resizeCanvas.bind(this));
+			window.addEventListener("load", this.#resizeCanvas.bind(this));
 
 			this.#resizeCanvas();
 		}
@@ -278,7 +279,7 @@
 				);
 			}
 
-			this.#screenRatio = window.devicePixelRatio;
+			this.#screenRatio = window.devicePixelRatio || 1;
 
 			try {
 				localStorage.setItem(
