@@ -21,6 +21,6 @@ export type Drawing = {
 };
 
 export type Collection = {
-	name: string;
-	[key: Drawing.name]: Drawing;
+	collectionName: string;
+	[key: string]: Drawing;
 };

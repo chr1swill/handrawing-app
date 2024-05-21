@@ -1,8 +1,9 @@
-import { DrawingAction } from "./types/types";
+import "./types/types";
 
 /**
  * @typedef{import('./types/types').Point} Point
  * @typedef{import('./types/types').Points} Points
+ * @typedef{import('./types/types').DrawingAction} DrawingAction
  * @typedef{import('./types/types').Stroke} Stroke
  * @typedef{import('./types/types').Drawing} Drawing
  * @typedef{import('./types/types').Collection} Collection
