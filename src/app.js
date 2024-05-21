@@ -1,12 +1,18 @@
 /**
- * @typedef{import('../types/types').Point} Point
- * @typedef{import('../types/types').Points} Points
- * @typedef{import('../types/types').Stroke} Stroke
- * @typedef{import('../types/types').Drawing} Drawing
- * @typedef{import('../types/types').Collection} Collection
+ * @typedef{import('../types/types').Point} PointT
+ * @typedef{import('../types/types').Points} PointsT
+ * @typedef{import('../types/types').Stroke} StrokeT
+ * @typedef{import('../types/types').Drawing} DrawingT
+ * @typedef{import('../types/types').Collection} CollectionT
+ * @typedef{import('../types/types').DrawingAction} DrawingActionT
  */
 
 (function () {
+	const DrawingAction = Object.freeze({
+		DRAW: "0",
+		ERASE: "1",
+	});
+
 	const localStorageKeys = Object.freeze({
 		screenRatio: "currentScreenRatio",
 		strokeWeight: "currentStrokeWeight",
@@ -22,7 +28,7 @@
 		/**@type{string}*/
 		#strokeColor;
 
-		/**@type{DrawingAction}*/
+		/**@type{DrawingActionT}*/
 		#drawingMode;
 
 		/**@type{boolean}*/
@@ -34,16 +40,16 @@
 		/**@type{DOMRect}*/
 		#canvasRect;
 
-		/**@type{Point}*/
+		/**@type{PointT}*/
 		#position = { x: 0, y: 0 };
 
-		/**@type{Points}*/
+		/**@type{PointsT}*/
 		#points = [];
 
-		/**@type{Stroke}*/
+		/**@type{StrokeT}*/
 		#stroke;
 
-		/**@type{Drawing}*/
+		/**@type{DrawingT}*/
 		#drawing = { name: "", strokes: [] };
 
 		/**
@@ -126,14 +132,14 @@
 					);
 				}
 
-				this.#drawingMode = /**@type{DrawingAction}*/ (storedDrawingMode);
+				this.#drawingMode = /**@type{DrawingActionT}*/ (storedDrawingMode);
 			} else {
-				this.#drawingMode = /**@type{DrawingAction}*/ (storedDrawingMode);
+				this.#drawingMode = /**@type{DrawingActionT}*/ (storedDrawingMode);
 			}
 
 			this.#stroke = {
 				points: [],
-				drawingMode: /**@type{DrawingAction}*/ (this.#drawingMode),
+				drawingMode: /**@type{DrawingActionT}*/ (this.#drawingMode),
 				weight: this.#strokeWeight,
 				color: this.#strokeColor,
 			};
