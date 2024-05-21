@@ -116,6 +116,9 @@ import "./types/types";
 		}
 	}
 
+	/**
+	 * @type{Point}
+	 */
 	let coord = { x: 0, y: 0 };
 
 	/**
