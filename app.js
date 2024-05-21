@@ -19,13 +19,13 @@ import { DrawingAction } from "./types/types";
 	});
 
 	class DrawingApp {
-		/**@type{string | null}*/
+		/**@type{number}*/
 		#strokeWeight;
 
-		/**@type{string | null}*/
+		/**@type{string}*/
 		#strokeColor;
 
-		/**@type{string | null}*/
+		/**@type{DrawingAction}*/
 		#drawingMode;
 
 		/**@type{boolean}*/
@@ -43,8 +43,11 @@ import { DrawingAction } from "./types/types";
 		/**@type{Points}*/
 		#points = [];
 
-        /**@type{Stroke}*/
-        #stroke;
+		/**@type{Stroke}*/
+		#stroke;
+
+		/**@type{Drawing}*/
+		#drawing = { name: "", strokes: [] };
 
 		/**
 		 * All params are assumed to be null checked
@@ -53,29 +56,90 @@ import { DrawingAction } from "./types/types";
 		 * @param{HTMLCanvasElement} canvas
 		 * @param{CanvasRenderingContext2D} ctx
 		 * @param{HTMLDivElement} toolBar
+		 * @param{string} name
 		 */
-		constructor(canvas, ctx, toolBar) {
+		constructor(canvas, ctx, toolBar, name) {
 			if (!canvas || !ctx || !toolBar) {
 				throw new ReferenceError(
 					"Invalid paramater of class, could not instantiate",
 				);
-            }
+			}
 
 			this.canvas = canvas;
 			this.ctx = ctx;
 			this.toolBar = toolBar;
+			this.#drawing.name = name;
 
 			this.#isDrawing = false;
 
-            let storedDrawingMode = localStorage.getItem(localStorageKeys.drawingMode);
-            if (storedDrawingMode === null) {
+			/**@type{string | number | null}*/
+			let storedStrokeWeight = localStorage.getItem(
+				localStorageKeys.strokeWeight,
+			);
+			if (storedStrokeWeight === null) {
+				storedStrokeWeight = 1;
+				try {
+					localStorage.setItem(
+						localStorageKeys.strokeWeight,
+						JSON.stringify(storedStrokeWeight),
+					);
+				} catch (e) {
+					console.error(e);
+					throw new Error(
+						"Could not save default drawing stroke weight an error occurred in the process",
+					);
+				}
 
-            }
-            let storedStrokeWeight = localStorage.getItem(localStorageKeys.strokeWeight);
-            let storedColor = localStorage.getItem(localStorageKeys.strokeColor);
+				this.#strokeWeight = storedStrokeWeight;
+			} else {
+				this.#strokeWeight = parseInt(storedStrokeWeight);
+			}
 
-            /**@type{Stroke}*/
-            this.#stroke = { points: [], drawingMode: "", weight: 0, color: ""};
+			/**@type{string | null}*/
+			let storedStrokeColor = localStorage.getItem(
+				localStorageKeys.strokeColor,
+			);
+			if (storedStrokeColor === null) {
+				storedStrokeColor = "black";
+				try {
+					localStorage.setItem(localStorageKeys.strokeColor, storedStrokeColor);
+				} catch (e) {
+					console.error(e);
+					throw new Error(
+						"Could not save default drawing stroke color an error occurred in the process",
+					);
+				}
+
+				this.#strokeColor = storedStrokeColor;
+			} else {
+				this.#strokeColor = storedStrokeColor;
+			}
+
+			let storedDrawingMode = localStorage.getItem(
+				localStorageKeys.drawingMode,
+			);
+			if (storedDrawingMode === null) {
+				storedDrawingMode = DrawingAction.DRAW;
+				try {
+					localStorage.setItem(localStorageKeys.drawingMode, storedDrawingMode);
+				} catch (e) {
+					console.error(e);
+					throw new Error(
+						"Could not save default drawing mode an error occurred in the process",
+					);
+				}
+
+				this.#drawingMode = /**@type{DrawingAction}*/ (storedDrawingMode);
+			} else {
+				this.#drawingMode = /**@type{DrawingAction}*/ (storedDrawingMode);
+			}
+
+			this.#stroke = {
+				points: [],
+				drawingMode: /**@type{DrawingAction}*/ (this.#drawingMode),
+				weight: this.#strokeWeight,
+				color: this.#strokeColor,
+			};
 
 			const screenRatioAsString = localStorage.getItem(
 				localStorageKeys.screenRatio,
@@ -110,45 +174,9 @@ import { DrawingAction } from "./types/types";
 				);
 			}
 
-			this.#strokeWeight = localStorage.getItem("currentStrokeWeight");
-			if (this.#strokeWeight === null) {
-				this.#strokeWeight = "1";
-				try {
-					localStorage.setItem("currentStrokeWeight", this.#strokeWeight);
-				} catch (e) {
-					console.error(e);
-					throw new Error(
-						"Could not save default drawing stroke weight an error occurred in the process",
-					);
-				}
-			}
-
-			this.#strokeColor = localStorage.getItem("currentStrokeColor");
-			if (this.#strokeColor === null) {
-				this.#strokeColor = "black";
-				try {
-					localStorage.setItem("currentStrokeColor", this.#strokeColor);
-				} catch (e) {
-					console.error(e);
-					throw new Error(
-						"Could not save default drawing stroke color an error occurred in the process",
-					);
-				}
-			}
-
-			this.#drawingMode = localStorage.getItem("currentDrawingMode");
-			if (this.#drawingMode === null) {
-				this.#drawingMode = DrawingAction.DRAW;
-				try {
-					localStorage.setItem("currentDrawingMode", this.#drawingMode);
-				} catch (e) {
-					console.error(e);
-					throw new Error(
-						"Could not save default drawing mode an error occurred in the process",
-					);
-				}
-			}
-
+			this.ctx.lineWidth = this.#strokeWeight;
+			this.ctx.strokeStyle = this.#strokeColor;
+			this.ctx.lineCap = "round";
 
 			this.canvas.addEventListener(
 				"pointerdown",
@@ -202,11 +230,32 @@ import { DrawingAction } from "./types/types";
 
 		#stopDrawing() {
 			this.#isDrawing = false;
-            this.#stroke = {
+			this.#stroke = {
+				points: this.#points,
+				drawingMode: this.#drawingMode,
+				weight: this.#strokeWeight,
+				color: this.#strokeColor,
+			};
 
-            while (this.#points.length > 0) {
-                this.#points.pop();
-            }
+			this.#drawing.strokes.push(this.#stroke);
+			try {
+				localStorage.setItem(this.#drawing.name, JSON.stringify(this.#drawing));
+			} catch (e) {
+				console.error(e);
+				console.warn(
+					"Your drawing are no longer being save to local storage you have ran out of space, you will need to export your canvas to save",
+				);
+				// possibly add some sort of popup on screen that will save something similar
+				// could use an alert need to that would get really annoying
+			} finally {
+				while (this.#points.length > 0) {
+					this.#points.pop();
+				}
+
+				while (this.#stroke.points.length > 0) {
+					this.#stroke.points.pop();
+				}
+			}
 		}
 
 		#draw() {}
@@ -253,7 +302,6 @@ import { DrawingAction } from "./types/types";
 			this.ctx.canvas.height = height;
 			this.ctx.scale(this.#screenRatio, this.#screenRatio); // Adjust drawing scale to account for the increased canvas size
 		}
-
 
 		#handleChangeEventOnToolBar() {}
 		#handleClickEventOnToolBar() {}
