@@ -10,12 +10,23 @@ import { DrawingAction } from "./types/types";
  */
 
 (function () {
+	const localStorageKeys = Object.freeze({
+		screenRatio: "currentScreenRatio",
+		strokeWeight: "currentStrokeWeight",
+		strokeColor: "currentStrokeColor",
+		drawingMode: "currentDrawingMode",
+		canvasRect: "currentCanvasRect",
+	});
+
 	class DrawingApp {
 		/**@type{boolean}*/
 		#isDrawing;
 
 		/**@type{string | null}*/
 		#screenRatio;
+
+		/**@type{DOMRect}*/
+		#canvasRect;
 
 		/**
 		 * @param{HTMLCanvasElement} canvas
@@ -31,17 +42,30 @@ import { DrawingAction } from "./types/types";
 
 			this.#isDrawing = false;
 
-			this.#screenRatio = localStorage.getItem("currentScreenRatio");
+			this.#screenRatio = localStorage.getItem(localStorageKeys.screenRatio);
 			if (this.#screenRatio === null) {
 				this.#screenRatio = window.devicePixelRatio.toString();
 				try {
-					localStorage.setItem("currentScreenRatio", this.#screenRatio);
+					localStorage.setItem(localStorageKeys.screenRatio, this.#screenRatio);
 				} catch (e) {
 					console.error(e);
 					throw new Error(
 						"Could not save current screen ratio an error occurred in the process",
 					);
 				}
+			}
+
+			this.#canvasRect = canvas.getBoundingClientRect();
+			try {
+				localStorage.setItem(
+					localStorageKeys.canvasRect,
+					JSON.stringify(this.#canvasRect),
+				);
+			} catch (e) {
+				console.error(e);
+				throw new Error(
+					"Could not save current canvas DOMRect an error occurred in the process",
+				);
 			}
 
 			this.canvas.addEventListener(
@@ -59,6 +83,11 @@ import { DrawingAction } from "./types/types";
 			this.#resizeCanvas();
 		}
 
+		/**
+		 * @param{PointerEvent} event
+		 */
+		#getPostions(event) {}
+
 		#startDrawing() {
 			this.#isDrawing = true;
 		}
@@ -67,7 +96,35 @@ import { DrawingAction } from "./types/types";
 
 		#draw() {}
 
-		#resizeCanvas() {}
+		#resizeCanvas() {
+			if (this.ctx === null) {
+				throw new ReferenceError(
+					"Could not access context, attempt returned null value",
+				);
+			}
+
+			const ratio = window.devicePixelRatio;
+			this.#screenRatio = ratio.toString();
+
+			try {
+				localStorage.setItem(localStorageKeys.screenRatio, this.#screenRatio);
+			} catch (e) {
+				console.error(e);
+				throw new Error(
+					`An error occured when attempting to update the value of localStorage key: ${localStorageKeys.screenRatio}`,
+				);
+			}
+
+			this.#canvasRect;
+
+			const width = window.innerWidth * ratio;
+			const height = window.innerHeight * ratio;
+			this.ctx.canvas.style.width = window.innerWidth + "px";
+			this.ctx.canvas.style.height = window.innerHeight + "px";
+			this.ctx.canvas.width = width;
+			this.ctx.canvas.height = height;
+			this.ctx.scale(ratio, ratio); // Adjust drawing scale to account for the increased canvas size
+		}
 	}
 
 	class DrawingSettingContols {
