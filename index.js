@@ -1,3 +1,13 @@
+import { DrawingAction } from "./types/types";
+
+/**
+ * @typedef{import('./types/types').Point} Point
+ * @typedef{import('./types/types').Points} Points
+ * @typedef{import('./types/types').Stroke} Stroke
+ * @typedef{import('./types/types').Drawing} Drawing
+ * @typedef{import('./types/types').Collection} Collection
+ */
+
 (function () {
 	window.addEventListener("load", function () {
 		resizeCanvas();
