@@ -314,4 +314,15 @@ import { DrawingAction } from "./types/types";
 		#handleChangeEventOnToolBar() {}
 		#handleClickEventOnToolBar() {}
 	}
+
+	function main() {
+		const canvas = /**@type{HTMLCanvasElement | null}*/ (
+			document.getElementById("myCanvas")
+		);
+		if (canvas === null) {
+			console.error("Could not find element with id: #myCanvas");
+			return;
+		}
+	}
+	main();
 })();
