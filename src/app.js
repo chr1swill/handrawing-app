@@ -212,20 +212,21 @@
 		 * @param{PointerEvent} event
 		 */
 		#getPostions(event) {
-			this.#points.push(
-				(this.#position = {
-					x:
-						(((event.clientX - this.#canvasRect.left) /
-							this.#canvasRect.width) *
-							this.canvas.width) /
-						this.#screenRatio,
-					y:
-						(((event.clientY - this.#canvasRect.top) /
-							this.#canvasRect.height) *
-							this.canvas.height) /
-						this.#screenRatio,
-				}),
-			);
+			/**@type{PointT}*/
+			const point = {
+				x:
+					(((event.clientX - this.#canvasRect.left) / this.#canvasRect.width) *
+						this.canvas.width) /
+					this.#screenRatio,
+
+				y:
+					(((event.clientY - this.#canvasRect.top) / this.#canvasRect.height) *
+						this.canvas.height) /
+					this.#screenRatio,
+			};
+
+			this.#position = point;
+			this.#points.push(this.#position);
 		}
 
 		/**
