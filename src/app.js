@@ -264,7 +264,9 @@
 				while (this.#stroke.points.length > 0) {
 					this.#stroke.points.pop();
 				}
+				console.log("this.stoke inside finally: ", this.#stroke);
 			}
+			console.log("this.stoke ouside finally: ", this.#stroke);
 		}
 
 		/**@param{PointerEvent} event*/
