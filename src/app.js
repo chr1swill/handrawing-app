@@ -232,7 +232,7 @@
 
 			/**@type{StrokeT}*/
 			const newStroke = {
-				points: [...this.#points],
+				points: this.#points,
 				drawingMode: this.#drawingMode,
 				weight: this.#strokeWeight,
 				color: this.#strokeColor,
