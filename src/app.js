@@ -233,6 +233,7 @@
 		 * @param{PointerEvent} event
 		 */
 		#startDrawing(event) {
+			console.log("this.stroke in startDrawing method: ", this.#stroke);
 			this.#isDrawing = true;
 			this.#getPostions(event);
 		}
@@ -277,10 +278,8 @@
 			this.ctx.lineCap = "round";
 			this.ctx.beginPath();
 			this.ctx.moveTo(this.#position.x, this.#position.y);
-			console.log("x: ", this.#position.x, " y: ", this.#position.y);
 			this.#getPostions(event);
 			this.ctx.lineTo(this.#position.x, this.#position.y);
-			console.log("x: ", this.#position.x, " y: ", this.#position.y);
 			this.ctx.stroke();
 		}
 
