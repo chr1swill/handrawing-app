@@ -47,9 +47,6 @@
 		/**@type{PointsT}*/
 		#points = [];
 
-		/**@type{StrokeT}*/
-		#stroke;
-
 		/**@type{DrawingT}*/
 		#drawing = { name: "", strokes: [] };
 
@@ -137,13 +134,6 @@
 			} else {
 				this.#drawingMode = /**@type{DrawingActionT}*/ (storedDrawingMode);
 			}
-
-			this.#stroke = {
-				points: [],
-				drawingMode: /**@type{DrawingActionT}*/ (this.#drawingMode),
-				weight: this.#strokeWeight,
-				color: this.#strokeColor,
-			};
 
 			const screenRatioAsString = localStorage.getItem(
 				localStorageKeys.screenRatio,
@@ -233,21 +223,22 @@
 		 * @param{PointerEvent} event
 		 */
 		#startDrawing(event) {
-			console.log("this.stroke in startDrawing method: ", this.#stroke);
 			this.#isDrawing = true;
 			this.#getPostions(event);
 		}
 
 		#stopDrawing() {
 			this.#isDrawing = false;
-			this.#stroke = {
-				points: this.#points,
+
+			/**@type{StrokeT}*/
+			const newStroke = {
+				points: [...this.#points],
 				drawingMode: this.#drawingMode,
 				weight: this.#strokeWeight,
 				color: this.#strokeColor,
 			};
 
-			this.#drawing.strokes.push(this.#stroke);
+			this.#drawing.strokes.push(newStroke);
 			try {
 				localStorage.setItem(this.#drawing.name, JSON.stringify(this.#drawing));
 			} catch (e) {
@@ -258,16 +249,8 @@
 				// possibly add some sort of popup on screen that will save something similar
 				// could use an alert need to that would get really annoying
 			} finally {
-				while (this.#points.length > 0) {
-					this.#points.pop();
-				}
-
-				while (this.#stroke.points.length > 0) {
-					this.#stroke.points.pop();
-				}
-				console.log("this.stoke inside finally: ", this.#stroke);
+				this.#points = [];
 			}
-			console.log("this.stoke ouside finally: ", this.#stroke);
 		}
 
 		/**@param{PointerEvent} event*/
@@ -331,7 +314,6 @@
 	}
 
 	function main() {
-		// FOR TESTING
 		localStorage.clear();
 
 		const canvas = /**@type{HTMLCanvasElement | null}*/ (
