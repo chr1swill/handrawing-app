@@ -219,12 +219,26 @@
 			);
 
 			window.addEventListener("resize", () => {
+				console.log("this: ", this);
 				this.#resizeCanvas();
 				this.#redrawCanvas();
 			});
 			window.addEventListener("load", () => {
-				this.#resizeCanvas();
-				this.#redrawCanvas();
+				console.log("Load event triggered");
+				setTimeout(() => {
+					console.log(
+						"Canvas dimensions before resize:",
+						this.canvas.width,
+						this.canvas.height,
+					);
+					this.#resizeCanvas();
+					this.#redrawCanvas();
+					console.log(
+						"Canvas dimensions after resize:",
+						this.canvas.width,
+						this.canvas.height,
+					);
+				}, 1000); // Delay execution by 100ms
 			});
 		}
 
@@ -303,7 +317,7 @@
 				);
 			}
 
-			this.#screenRatio = window.devicePixelRatio || 1;
+			this.#screenRatio = window.devicePixelRatio;
 
 			try {
 				localStorage.setItem(
