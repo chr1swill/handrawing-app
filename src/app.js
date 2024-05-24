@@ -43,7 +43,7 @@
 		#canvasRect;
 
 		/**@type{string}*/
-		#currentDrawing;
+		#currentDrawing = "";
 
 		/**@type{PointT}*/
 		#position = { x: 0, y: 0 };
@@ -74,6 +74,7 @@
 			this.ctx = ctx;
 			this.toolBar = toolBar;
 			this.#drawing.name = name;
+			this.#currentDrawing = name;
 
 			this.#isDrawing = false;
 
@@ -206,11 +207,11 @@
 				this.#handleClickEventOnToolBar.bind(this),
 			);
 
-			window.addEventListener("resize", (e) => {
+			window.addEventListener("resize", () => {
 				this.#resizeCanvas();
 				this.#redrawCanvas();
 			});
-			window.addEventListener("load", (e) => {
+			window.addEventListener("load", () => {
 				this.#resizeCanvas();
 				this.#redrawCanvas();
 			});
@@ -334,18 +335,23 @@
 				localStorage.getItem(this.#currentDrawing) === null
 			) {
 				let drawingName;
-				while (!drawingName || drawingName === "") {
+				retryPrompt: while (!drawingName || drawingName === "") {
+					console.log("first retry loop");
 					drawingName = prompt("Choose a name for your new drawing");
 					if (drawingName && localStorage.getItem(drawingName) !== null) {
 						console.warn(
 							"You choose a name for a drawing that was already taken, please select another name",
 						);
 						drawingName = null;
-						continue;
+						continue retryPrompt;
+					} else {
+						if (drawingName === null) continue retryPrompt;
+
+						this.#currentDrawing = drawingName;
+						break;
 					}
 				}
 
-				this.#currentDrawing = drawingName;
 				this.#drawing.name = this.#currentDrawing;
 			}
 
