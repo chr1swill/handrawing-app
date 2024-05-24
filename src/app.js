@@ -220,7 +220,7 @@
 
 			window.addEventListener("resize", () => {
 				this.#resizeCanvas();
-				this.ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+				this.#redrawCanvas();
 			});
 
 			window.addEventListener("load", () => {
