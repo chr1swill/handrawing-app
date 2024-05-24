@@ -20,6 +20,7 @@
 		strokeColor: "currentStrokeColor",
 		drawingMode: "currentDrawingMode",
 		canvasRect: "currentCanvasRect",
+		currentDrawing: "currentDrawing",
 	});
 
 	class DrawingApp {
@@ -40,6 +41,9 @@
 
 		/**@type{DOMRect}*/
 		#canvasRect;
+
+		/**@type{string}*/
+		#currentDrawing;
 
 		/**@type{PointT}*/
 		#position = { x: 0, y: 0 };
@@ -168,6 +172,16 @@
 				);
 			}
 
+			let storedDrawing = localStorage.getItem(localStorageKeys.currentDrawing);
+			if (storedDrawing === null) {
+				this.#currentDrawing = this.#drawing.name;
+			} else {
+				/**@type{DrawingT}*/
+				const storedDrawingAsObject = JSON.parse(storedDrawing);
+				this.#currentDrawing = storedDrawingAsObject.name;
+				this.#drawing = storedDrawingAsObject;
+			}
+
 			this.ctx.lineWidth = this.#strokeWeight;
 			this.ctx.strokeStyle = this.#strokeColor;
 			this.ctx.lineCap = "round";
@@ -192,10 +206,14 @@
 				this.#handleClickEventOnToolBar.bind(this),
 			);
 
-			window.addEventListener("resize", this.#resizeCanvas.bind(this));
-			window.addEventListener("load", this.#resizeCanvas.bind(this));
-
-			this.#resizeCanvas();
+			window.addEventListener("resize", (e) => {
+				this.#resizeCanvas();
+				this.#redrawCanvas();
+			});
+			window.addEventListener("load", (e) => {
+				this.#resizeCanvas();
+				this.#redrawCanvas();
+			});
 		}
 
 		/**
@@ -307,6 +325,86 @@
 			this.ctx.canvas.width = width;
 			this.ctx.canvas.height = height;
 			this.ctx.scale(this.#screenRatio, this.#screenRatio); // Adjust drawing scale to account for the increased canvas size
+		}
+
+		#redrawCanvas() {
+			if (
+				this.#currentDrawing === "" ||
+				this.#drawing.name === "" ||
+				localStorage.getItem(this.#currentDrawing) === null
+			) {
+				let drawingName;
+				while (!drawingName || drawingName === "") {
+					drawingName = prompt("Choose a name for your new drawing");
+					if (drawingName && localStorage.getItem(drawingName) !== null) {
+						console.warn(
+							"You choose a name for a drawing that was already taken, please select another name",
+						);
+						drawingName = null;
+						continue;
+					}
+				}
+
+				this.#currentDrawing = drawingName;
+				this.#drawing.name = this.#currentDrawing;
+			}
+
+			const storedDrawingAsString = localStorage.getItem(this.#currentDrawing);
+			if (storedDrawingAsString === null) {
+				console.error(
+					"Could not find any keys in localStorage with the name: ",
+					this.#currentDrawing,
+				);
+				return;
+			}
+
+			const parsedStoredDrawing = JSON.parse(storedDrawingAsString);
+			if (!("name" in parsedStoredDrawing && "stroke" in parsedStoredDrawing)) {
+				throw Error(
+					"The current drawing was not of type DrawingT, could not redraw to canvas",
+				);
+			}
+
+			this.#drawing = /**@type{DrawingT}*/ (parsedStoredDrawing);
+
+			const arrayOfStrokes = this.#drawing.strokes;
+			let i = 0;
+			strokeArrayLoop: while (i < arrayOfStrokes.length) {
+				const currentStoke = arrayOfStrokes[i];
+				this.ctx.lineCap = "round";
+				this.ctx.lineWidth = currentStoke.weight;
+
+				switch (currentStoke.drawingMode) {
+					case DrawingAction.DRAW:
+						this.ctx.globalCompositeOperation = "source-over";
+						break;
+					case DrawingAction.ERASE:
+						this.ctx.globalCompositeOperation = "destination-out";
+						break;
+					default:
+						console.error(
+							"Invalid drawing mode was could, would not draw current stroke",
+						);
+						continue strokeArrayLoop;
+				}
+
+				let j = 0;
+				const currentStokeArrayOfPoints = currentStoke.points;
+				const currentStokeArrayOfPointsLength =
+					currentStokeArrayOfPoints.length;
+				while (j < currentStokeArrayOfPointsLength - 1) {
+					const currentPoint = currentStokeArrayOfPoints[j];
+					const nextPoint = currentStokeArrayOfPoints[j + 1];
+					this.ctx.beginPath();
+					this.ctx.moveTo(currentPoint.x, currentPoint.y);
+					this.ctx.lineTo(nextPoint.x, nextPoint.y);
+					this.ctx.stroke();
+
+					j++;
+				}
+
+				i++;
+			}
 		}
 
 		#handleChangeEventOnToolBar() {}
