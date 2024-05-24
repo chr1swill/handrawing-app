@@ -175,19 +175,30 @@
 
 		async #openIndexedDB() {
 			return new Promise((resolve, reject) => {
-				const request = indexedDB.open("DrawingAppDB", 1);
+				const request = window.indexedDB.open("DrawingAppDB", 1);
 
 				request.onerror = (event) => {
 					console.error("IndexedDB error:", event);
 					reject(event);
 				};
 
-				request.onsuccess = (event) => {
-					resolve(event.target.result);
+				request.onsuccess = function (event) {
+					const request = /**@type{IDBOpenDBRequest | null}*/ (event.target);
+					if (request === null) {
+						console.error("Event target returned a null value");
+						return;
+					}
+					resolve(request.result);
 				};
 
 				request.onupgradeneeded = (event) => {
-					const db = event.target.result;
+					const request = /**@type{IDBOpenDBRequest | null}*/ (event.target);
+					if (request === null) {
+						console.error("Event target returned a null value");
+						return;
+					}
+
+					const db = request.result;
 					db.createObjectStore("settings");
 					db.createObjectStore("drawings");
 				};

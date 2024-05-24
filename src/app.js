@@ -1,13 +1,3 @@
-//ts-ignore
-/**
- * @typedef{import('../types/types').Point} PointT
- * @typedef{import('../types/types').Points} PointsT
- * @typedef{import('../types/types').Stroke} StrokeT
- * @typedef{import('../types/types').Drawing} DrawingT
- * @typedef{import('../types/types').Collection} CollectionT
- * @typedef{import('../types/types').DrawingAction} DrawingActionT
- */
-
 (function () {
 	const DrawingAction = Object.freeze({
 		DRAW: "0",
@@ -215,14 +205,14 @@
 				this.#draw(e);
 			});
 
-            this.canvas.addEventListener('dblclick', function(e) {
-                e.preventDefault();
-            });
+			this.canvas.addEventListener("dblclick", function (e) {
+				e.preventDefault();
+			});
 
-            // Prevent text selection on long press
-            this.canvas.addEventListener('selectstart', function(e) {
-                e.preventDefault();
-            });
+			// Prevent text selection on long press
+			this.canvas.addEventListener("selectstart", function (e) {
+				e.preventDefault();
+			});
 
 			this.toolBar.addEventListener(
 				"change",
