@@ -25,22 +25,22 @@
 
 	class DrawingApp {
 		/**@type{number}*/
-		#strokeWeight;
+		#strokeWeight = 5;
 
 		/**@type{string}*/
-		#strokeColor;
+		#strokeColor = "black";
 
 		/**@type{DrawingActionT}*/
-		#drawingMode;
+		#drawingMode = DrawingAction.DRAW;
 
 		/**@type{boolean}*/
-		#isDrawing;
+		#isDrawing = false;
 
 		/**@type{number}*/
-		#screenRatio;
+		#screenRatio = 1;
 
 		/**@type{DOMRect}*/
-		#canvasRect;
+		#canvasRect = new DOMRect(0, 0, 0, 0);
 
 		/**@type{string}*/
 		#currentDrawing = "";
@@ -222,6 +222,7 @@
 				this.#resizeCanvas();
 				this.ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
 			});
+
 			window.addEventListener("load", () => {
 				this.#resizeCanvas();
 				this.#redrawCanvas();
