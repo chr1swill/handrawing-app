@@ -198,16 +198,22 @@
 			this.ctx.strokeStyle = this.#strokeColor;
 			this.ctx.lineCap = "round";
 
-			this.canvas.addEventListener(
-				"pointerdown",
-				this.#startDrawing.bind(this),
-			);
-			this.canvas.addEventListener("pointerup", this.#stopDrawing.bind(this));
-			this.canvas.addEventListener(
-				"pointercancel",
-				this.#stopDrawing.bind(this),
-			);
-			this.canvas.addEventListener("pointermove", this.#draw.bind(this));
+			this.canvas.addEventListener("pointerdown", (e) => {
+				e.preventDefault();
+				this.#startDrawing(e);
+			});
+			this.canvas.addEventListener("pointerup", (e) => {
+				e.preventDefault();
+				this.#stopDrawing();
+			});
+			this.canvas.addEventListener("pointercancel", (e) => {
+				e.preventDefault();
+				this.#stopDrawing();
+			});
+			this.canvas.addEventListener("pointermove", (e) => {
+				e.preventDefault();
+				this.#draw(e);
+			});
 
 			this.toolBar.addEventListener(
 				"change",
