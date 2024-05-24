@@ -5,12 +5,12 @@ export type Point = {
 
 export type Points = Point[];
 
-export enum DrawActions {
+enum DrawingActions {
 	DRAW = "0",
 	ERASE = "1",
 }
 
-export type DrawingAction = DrawActions;
+export type DrawingAction = "0" | "1";
 
 export type Stroke = {
 	points: Points;
