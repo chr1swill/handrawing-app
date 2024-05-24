@@ -330,8 +330,15 @@
 					`An error occured when attempting to update the value of localStorage key: ${localStorageKeys.screenRatio}`,
 				);
 			}
+			const width = window.innerWidth * this.#screenRatio;
+			const height = window.innerHeight * this.#screenRatio;
+			this.ctx.canvas.style.width = window.innerWidth + "px";
+			this.ctx.canvas.style.height = window.innerHeight + "px";
+			this.ctx.canvas.width = width;
+			this.ctx.canvas.height = height;
 
 			this.#canvasRect = this.canvas.getBoundingClientRect();
+			console.log("Canvas Rect: ", this.#canvasRect);
 			try {
 				localStorage.setItem(
 					localStorageKeys.canvasRect,
@@ -344,12 +351,6 @@
 				);
 			}
 
-			const width = window.innerWidth * this.#screenRatio;
-			const height = window.innerHeight * this.#screenRatio;
-			this.ctx.canvas.style.width = window.innerWidth + "px";
-			this.ctx.canvas.style.height = window.innerHeight + "px";
-			this.ctx.canvas.width = width;
-			this.ctx.canvas.height = height;
 			this.ctx.scale(this.#screenRatio, this.#screenRatio); // Adjust drawing scale to account for the increased canvas size
 		}
 
