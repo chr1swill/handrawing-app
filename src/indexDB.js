@@ -84,39 +84,45 @@
 
 					// Initialize IndexedDB
 
-					const storedStrokeWeight = /**@type{IDBRequest<number>}*/ (
-						store.get(IDBKeys.strokeWeight)
-					);
-
-					storedStrokeWeight.onerror = function () {
-						this.#strokeWeight = 5;
-
-						const updatedStrokeWeight = store.put(
-							this.#strokeWeight,
-							IDBkeys.strokeWeight,
+					try {
+						const storedStrokeWeight = /**@type{IDBRequest<number>}*/ (
+							store.get(IDBKeys.strokeWeight)
 						);
 
-						updatedStrokeWeight.onerror = function () {
-							console.error(updatedStrokeWeight.error);
-							return;
-						};
+						storedStrokeWeight.onerror = function () {
+							this.#strokeWeight = 5;
 
-						updatedStrokeWeight.onsuccess = function () {
-							console.log(
-								"The updated values of stroke weight: ",
-								updatedStrokeWeight.result,
+							const updatedStrokeWeight = store.put(
+								this.#strokeWeight,
+								IDBkeys.strokeWeight,
 							);
-							return;
-						};
-					};
 
-					storedStrokeWeight.onsucess = function () {
-						this.strokeWeight = storedStrokeWeight.result;
-					};
+							updatedStrokeWeight.onerror = function () {
+								console.error(updatedStrokeWeight.error);
+								return;
+							};
+
+							updatedStrokeWeight.onsuccess = function () {
+								console.log(
+									"The updated values of stroke weight: ",
+									updatedStrokeWeight.result,
+								);
+								return;
+							};
+						};
+
+						storedStrokeWeight.onsucess = function () {
+							this.strokeWeight = storedStrokeWeight.result;
+						};
+					} catch (e) {
+						console.error(e);
+						return;
+					}
 
 					const storedStrokeColor = /**@type{IDBRequest<string> | undefined}*/ (
 						store.get(IDBKeys.strokeColor)
 					);
+
 					const defaultStrokeColor = "black";
 					if (storedStrokeColor === undefined) {
 						try {
