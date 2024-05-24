@@ -111,7 +111,7 @@
 							};
 						};
 
-						storedStrokeWeight.onsucess = function () {
+						storedStrokeWeight.onsuccess = function () {
 							this.strokeWeight = storedStrokeWeight.result;
 						};
 					} catch (e) {
@@ -137,7 +137,7 @@
 								return;
 							};
 
-							updatedStrokeColor.onsucess = function () {
+							updatedStrokeColor.onsuccess = function () {
 								console.log(
 									"The updated values of stroke color: ",
 									updatedStrokeWeight.result,
@@ -154,7 +154,13 @@
 						return;
 					}
 
-					let storedDrawingMode = await store.get(IDBKeys.drawingMode);
+					const storedDrawingMode = /**@type{IDBRequest<string>}*/ (
+						store.get(IDBKeys.drawingMode)
+					);
+
+					storedDrawingMode.onerror = function () {};
+					storedDrawingMode.onsuccess = function () {};
+
 					if (storedDrawingMode === undefined) {
 						storedDrawingMode = DrawingAction.DRAW;
 						await store.put(storedDrawingMode, IDBKeys.drawingMode);
