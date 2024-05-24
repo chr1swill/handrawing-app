@@ -14,7 +14,7 @@
 		ERASE: "1",
 	});
 
-	const indexedDBKeys = Object.freeze({
+	const IDBKeys = Object.freeze({
 		screenRatio: "currentScreenRatio",
 		strokeWeight: "currentStrokeWeight",
 		strokeColor: "currentStrokeColor",
@@ -76,100 +76,135 @@
 			this.#drawing.name = name;
 			this.#currentDrawing = name;
 
-			this.#openIndexedDB().then(async (db) => {
-				const tx = db.transaction("settings", "readwrite");
-				const store = tx.objectStore("settings");
+			this.#openIndexedDB()
+				.then(async (db) => {
+					const tx = db.transaction("settings", "readwrite");
+					/**@type{IDBObjectStore}*/
+					const store = tx.objectStore("settings");
 
-				// Initialize IndexedDB
-				let storedStrokeWeight = await store.get(indexedDBKeys.strokeWeight);
-				if (storedStrokeWeight === undefined) {
-					storedStrokeWeight = 5;
-					await store.put(storedStrokeWeight, indexedDBKeys.strokeWeight);
-				}
-				this.#strokeWeight = storedStrokeWeight;
+					// Initialize IndexedDB
 
-				let storedStrokeColor = await store.get(indexedDBKeys.strokeColor);
-				if (storedStrokeColor === undefined) {
-					storedStrokeColor = "black";
-					await store.put(storedStrokeColor, indexedDBKeys.strokeColor);
-				}
-				this.#strokeColor = storedStrokeColor;
+					const storedStrokeWeight = /**@type{IDBRequest<number>}*/ (
+						store.get(IDBKeys.strokeWeight)
+					);
 
-				let storedDrawingMode = await store.get(indexedDBKeys.drawingMode);
-				if (storedDrawingMode === undefined) {
-					storedDrawingMode = DrawingAction.DRAW;
-					await store.put(storedDrawingMode, indexedDBKeys.drawingMode);
-				}
-				this.#drawingMode = storedDrawingMode;
+					storedStrokeWeight.onerror = function () {
+						this.#strokeWeight = 5;
 
-				let screenRatioAsString = await store.get(indexedDBKeys.screenRatio);
-				if (screenRatioAsString === undefined) {
-					this.#screenRatio = window.devicePixelRatio;
-					await store.put(this.#screenRatio, indexedDBKeys.screenRatio);
-				} else {
-					this.#screenRatio = screenRatioAsString;
-				}
+						const updateStrokeWeightValue = store.put(
+							this.#strokeWeight,
+							IDBkeys.strokeWeight,
+						);
+					};
 
-				this.#canvasRect = canvas.getBoundingClientRect();
-				await store.put(this.#canvasRect, indexedDBKeys.canvasRect);
+					storedStrokeWeight.onsucess = function () {};
 
-				let storedDrawing = await store.get(indexedDBKeys.currentDrawing);
-				if (storedDrawing === undefined) {
-					this.#currentDrawing = this.#drawing.name;
-				} else {
-					const storedDrawingAsObject = storedDrawing;
-					this.#currentDrawing = storedDrawingAsObject.name;
-					this.#drawing = storedDrawingAsObject;
-				}
+					const defaultStrokeWeight = 5;
+					if (storedStrokeWeight === undefined) {
+						console.error(storedStrokeWeight.error);
+						try {
+							store.put(defaultStrokeWeight, IDBKeys.strokeWeight);
+						} catch (e) {
+							console.error(e);
+							return;
+						}
+						this.#strokeWeight;
+					} else {
+						this.#strokeWeight = /**@type{number}*/ (storedStrokeWeight.result);
+					}
 
-				this.ctx.lineWidth = this.#strokeWeight;
-				this.ctx.strokeStyle = this.#strokeColor;
-				this.ctx.lineCap = "round";
+					const storedStrokeColor = /**@type{IDBRequest<string> | undefined}*/ (
+						store.get(IDBKeys.strokeColor)
+					);
+					const defaultStrokeColor = "black";
+					if (storedStrokeColor === undefined) {
+						try {
+							store.put(storedStrokeColor, IDBKeys.strokeColor);
+						} catch (e) {
+							console.error(e);
+						}
+					}
+					this.#strokeColor = storedStrokeColor;
 
-				this.canvas.addEventListener("pointerdown", (e) => {
-					e.preventDefault();
-					this.#startDrawing(e);
-				});
-				this.canvas.addEventListener("pointerup", (e) => {
-					e.preventDefault();
-					this.#stopDrawing();
-				});
-				this.canvas.addEventListener("pointercancel", (e) => {
-					e.preventDefault();
-					this.#stopDrawing();
-				});
-				this.canvas.addEventListener("pointermove", (e) => {
-					e.preventDefault();
-					this.#draw(e);
-				});
+					let storedDrawingMode = await store.get(IDBKeys.drawingMode);
+					if (storedDrawingMode === undefined) {
+						storedDrawingMode = DrawingAction.DRAW;
+						await store.put(storedDrawingMode, IDBKeys.drawingMode);
+					}
+					this.#drawingMode = storedDrawingMode;
 
-				this.canvas.addEventListener("dblclick", function (e) {
-					e.preventDefault();
-				});
+					let screenRatioAsString = await store.get(IDBKeys.screenRatio);
+					if (screenRatioAsString === undefined) {
+						this.#screenRatio = window.devicePixelRatio;
+						await store.put(this.#screenRatio, IDBKeys.screenRatio);
+					} else {
+						this.#screenRatio = screenRatioAsString;
+					}
 
-				// Prevent text selection on long press
-				this.canvas.addEventListener("selectstart", function (e) {
-					e.preventDefault();
-				});
+					this.#canvasRect = canvas.getBoundingClientRect();
+					await store.put(this.#canvasRect, IDBKeys.canvasRect);
 
-				this.toolBar.addEventListener(
-					"change",
-					this.#handleChangeEventOnToolBar.bind(this),
-				);
-				this.toolBar.addEventListener(
-					"click",
-					this.#handleClickEventOnToolBar.bind(this),
-				);
+					let storedDrawing = await store.get(IDBKeys.currentDrawing);
+					if (storedDrawing === undefined) {
+						this.#currentDrawing = this.#drawing.name;
+					} else {
+						const storedDrawingAsObject = storedDrawing;
+						this.#currentDrawing = storedDrawingAsObject.name;
+						this.#drawing = storedDrawingAsObject;
+					}
 
-				window.addEventListener("resize", () => {
-					this.#resizeCanvas();
-					this.#redrawCanvas();
+					this.ctx.lineWidth = this.#strokeWeight;
+					this.ctx.strokeStyle = this.#strokeColor;
+					this.ctx.lineCap = "round";
+				})
+				.catch((e) => {
+					console.error(e);
+					return;
 				});
 
-				window.addEventListener("load", () => {
-					this.#resizeCanvas();
-					this.#redrawCanvas();
-				});
+			this.canvas.addEventListener("pointerdown", (e) => {
+				e.preventDefault();
+				this.#startDrawing(e);
+			});
+			this.canvas.addEventListener("pointerup", (e) => {
+				e.preventDefault();
+				this.#stopDrawing();
+			});
+			this.canvas.addEventListener("pointercancel", (e) => {
+				e.preventDefault();
+				this.#stopDrawing();
+			});
+			this.canvas.addEventListener("pointermove", (e) => {
+				e.preventDefault();
+				this.#draw(e);
+			});
+
+			this.canvas.addEventListener("dblclick", function (e) {
+				e.preventDefault();
+			});
+
+			// Prevent text selection on long press
+			this.canvas.addEventListener("selectstart", function (e) {
+				e.preventDefault();
+			});
+
+			this.toolBar.addEventListener(
+				"change",
+				this.#handleChangeEventOnToolBar.bind(this),
+			);
+			this.toolBar.addEventListener(
+				"click",
+				this.#handleClickEventOnToolBar.bind(this),
+			);
+
+			window.addEventListener("resize", () => {
+				this.#resizeCanvas();
+				this.#redrawCanvas();
+			});
+
+			window.addEventListener("load", () => {
+				this.#resizeCanvas();
+				this.#redrawCanvas();
 			});
 		}
 
@@ -291,11 +326,11 @@
 				const store = tx.objectStore("settings");
 
 				try {
-					await store.put(this.#screenRatio, indexedDBKeys.screenRatio);
+					await store.put(this.#screenRatio, IDBKeys.screenRatio);
 				} catch (e) {
 					console.error(e);
 					throw new Error(
-						`An error occurred when attempting to update the value of IndexedDB key: ${indexedDBKeys.screenRatio}`,
+						`An error occurred when attempting to update the value of IndexedDB key: ${IDBKeys.screenRatio}`,
 					);
 				}
 
@@ -307,7 +342,7 @@
 				this.ctx.canvas.height = height;
 
 				this.#canvasRect = this.canvas.getBoundingClientRect();
-				await store.put(this.#canvasRect, indexedDBKeys.canvasRect);
+				await store.put(this.#canvasRect, IDBKeys.canvasRect);
 
 				this.ctx.scale(this.#screenRatio, this.#screenRatio); // Adjust drawing scale to account for the increased canvas size
 			});
