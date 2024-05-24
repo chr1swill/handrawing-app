@@ -219,26 +219,12 @@
 			);
 
 			window.addEventListener("resize", () => {
-				console.log("this: ", this);
 				this.#resizeCanvas();
 				this.#redrawCanvas();
 			});
 			window.addEventListener("load", () => {
-				console.log("Load event triggered");
-				setTimeout(() => {
-					console.log(
-						"Canvas dimensions before resize:",
-						this.canvas.width,
-						this.canvas.height,
-					);
-					this.#resizeCanvas();
-					this.#redrawCanvas();
-					console.log(
-						"Canvas dimensions after resize:",
-						this.canvas.width,
-						this.canvas.height,
-					);
-				}, 1000); // Delay execution by 100ms
+				this.#resizeCanvas();
+				this.#redrawCanvas();
 			});
 		}
 
@@ -338,7 +324,6 @@
 			this.ctx.canvas.height = height;
 
 			this.#canvasRect = this.canvas.getBoundingClientRect();
-			console.log("Canvas Rect: ", this.#canvasRect);
 			try {
 				localStorage.setItem(
 					localStorageKeys.canvasRect,
