@@ -215,6 +215,15 @@
 				this.#draw(e);
 			});
 
+            this.canvas.addEventListener('dblclick', function(e) {
+                e.preventDefault();
+            });
+
+            // Prevent text selection on long press
+            this.canvas.addEventListener('selectstart', function(e) {
+                e.preventDefault();
+            });
+
 			this.toolBar.addEventListener(
 				"change",
 				this.#handleChangeEventOnToolBar.bind(this),
