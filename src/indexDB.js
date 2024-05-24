@@ -94,7 +94,7 @@
 
 							const updatedStrokeWeight = store.put(
 								this.#strokeWeight,
-								IDBkeys.strokeWeight,
+								IDBKeys.strokeWeight,
 							);
 
 							updatedStrokeWeight.onerror = function () {
@@ -119,19 +119,35 @@
 						return;
 					}
 
-					const storedStrokeColor = /**@type{IDBRequest<string> | undefined}*/ (
+					const storedStrokeColor = /**@type{IDBRequest<string>}*/ (
 						store.get(IDBKeys.strokeColor)
 					);
 
-					const defaultStrokeColor = "black";
-					if (storedStrokeColor === undefined) {
-						try {
-							store.put(storedStrokeColor, IDBKeys.strokeColor);
-						} catch (e) {
-							console.error(e);
-						}
-					}
-					this.#strokeColor = storedStrokeColor;
+					storedStrokeColor.onerror = function () {
+						this.#strokeColor = "black";
+
+						const updatedStrokeColor = store.put(
+							this.strokeColor,
+							IDBKeys.strokeColor,
+						);
+
+						updatedStrokeColor.onerror = function () {
+							console.error(updatedStrokeColor.error);
+							return;
+						};
+
+						updatedStrokeColor.onsucess = function () {
+							console.log(
+								"The updated values of stroke color: ",
+								updatedStrokeWeight.result,
+							);
+							return;
+						};
+					};
+
+					storedStrokeColor.onsuccess = function () {
+						this.#strokeColor = storedStrokeColor.result;
+					};
 
 					let storedDrawingMode = await store.get(IDBKeys.drawingMode);
 					if (storedDrawingMode === undefined) {
