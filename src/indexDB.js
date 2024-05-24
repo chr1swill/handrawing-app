@@ -91,27 +91,28 @@
 					storedStrokeWeight.onerror = function () {
 						this.#strokeWeight = 5;
 
-						const updateStrokeWeightValue = store.put(
+						const updatedStrokeWeight = store.put(
 							this.#strokeWeight,
 							IDBkeys.strokeWeight,
 						);
+
+						updatedStrokeWeight.onerror = function () {
+							console.error(updatedStrokeWeight.error);
+							return;
+						};
+
+						updatedStrokeWeight.onsuccess = function () {
+							console.log(
+								"The updated values of stroke weight: ",
+								updatedStrokeWeight.result,
+							);
+							return;
+						};
 					};
 
-					storedStrokeWeight.onsucess = function () {};
-
-					const defaultStrokeWeight = 5;
-					if (storedStrokeWeight === undefined) {
-						console.error(storedStrokeWeight.error);
-						try {
-							store.put(defaultStrokeWeight, IDBKeys.strokeWeight);
-						} catch (e) {
-							console.error(e);
-							return;
-						}
-						this.#strokeWeight;
-					} else {
-						this.#strokeWeight = /**@type{number}*/ (storedStrokeWeight.result);
-					}
+					storedStrokeWeight.onsucess = function () {
+						this.strokeWeight = storedStrokeWeight.result;
+					};
 
 					const storedStrokeColor = /**@type{IDBRequest<string> | undefined}*/ (
 						store.get(IDBKeys.strokeColor)
