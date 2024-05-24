@@ -75,6 +75,17 @@
 			this.toolBar = toolBar;
 			this.#drawing.name = name;
 			this.#currentDrawing = name;
+			if (localStorage.getItem(this.#currentDrawing) === null) {
+				try {
+					localStorage.setItem(
+						this.#drawing.name,
+						JSON.stringify(this.#drawing),
+					);
+				} catch (e) {
+					console.error(e);
+					return;
+				}
+			}
 
 			this.#isDrawing = false;
 
@@ -329,6 +340,18 @@
 		}
 
 		#redrawCanvas() {
+			console.log(`find case:
+            currentDrawing: ${this.#currentDrawing}
+            drawing.name: ${this.#drawing.name}
+            localStorage get: ${localStorage.getItem(this.#currentDrawing) === null}
+            `);
+
+			console.log(
+				"localStorage get value",
+				//@ts-ignore
+				JSON.parse(localStorage.getItem(this.#currentDrawing)),
+			);
+
 			if (
 				this.#currentDrawing === "" ||
 				this.#drawing.name === "" ||
@@ -365,7 +388,9 @@
 			}
 
 			const parsedStoredDrawing = JSON.parse(storedDrawingAsString);
-			if (!("name" in parsedStoredDrawing && "stroke" in parsedStoredDrawing)) {
+			if (
+				!("name" in parsedStoredDrawing && "strokes" in parsedStoredDrawing)
+			) {
 				throw Error(
 					"The current drawing was not of type DrawingT, could not redraw to canvas",
 				);
