@@ -139,7 +139,7 @@
 				this.#drawingMode = /**@type{DrawingActionT}*/ (storedDrawingMode);
 			} else {
 				this.#drawingMode = /**@type{DrawingActionT}*/ (storedDrawingMode);
-				if ((storedDrawingMode = DrawingAction.ERASE)) {
+				if (storedDrawingMode === DrawingAction.ERASE) {
 					const overlay2 = /**@type{HTMLElement|null}*/ (
 						document.querySelector("[data-slider-overlay]")
 					);
