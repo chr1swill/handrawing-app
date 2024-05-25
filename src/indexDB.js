@@ -300,19 +300,24 @@
 									/**@type{IDBObjectStore}*/
 									const store = tx.objectStore("drawings");
 
-									const storedDrawing = /**@type{IDBRequest<DrawingT>}*/ (
-										store.get(self.#currentDrawing)
-									);
+									try {
+										const storedDrawing = /**@type{IDBRequest<DrawingT>}*/ (
+											store.get(self.#currentDrawing)
+										);
 
-									storedDrawing.onerror = function () {
-										console.error(storedDrawing.error);
+										storedDrawing.onerror = function () {
+											console.error(storedDrawing.error);
+											return;
+										};
+
+										storedDrawing.onsuccess = function () {
+											self.#drawing.name = storedDrawing.result.name;
+											self.#drawing.strokes = storedDrawing.result.strokes;
+										};
+									} catch (e) {
+										console.error(e);
 										return;
-									};
-
-									storedDrawing.onsuccess = function () {
-										self.#drawing.name = storedDrawing.result.name;
-										self.#drawing.strokes = storedDrawing.result.strokes;
-									};
+									}
 								})
 								.catch((e) => {
 									console.error(e);
