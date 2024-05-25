@@ -13,14 +13,23 @@
 		currentDrawing: "currentDrawing",
 	});
 
-	const eventdataIdJumpTable = Object.freeze({
-		"data-button-clear-canva": function () {},
-		"data-input-upload-file": function () {},
-		"data-button-save-file": function () {},
-		"data-slider-pencil": function () {},
-		"data-slider-eraser": function () {},
-		"data-input-stroke-weight": function () {},
-	});
+	/**
+	 * @typedef {Function} EventHandler
+	 * @param {PointerEvent} e
+	 * @returns{void}
+	 */
+
+	const eventdataIdJumpTable =
+		/**@type{Readonly<{[key: string]: EventHandler}>}*/ (
+			Object.freeze({
+				"data-button-clear-canvas": function (e) {},
+				"data-input-upload-file": function (e) {},
+				"data-button-save-file": function (e) {},
+				"data-slider-pencil": function (e) {},
+				"data-slider-eraser": function (e) {},
+				"data-input-stroke-weight": function (e) {},
+			})
+		);
 
 	class DrawingApp {
 		/**@type{number}*/
@@ -456,9 +465,112 @@
 			}
 		}
 
-		#handleChangeEventOnToolBar() {}
+		/**
+		 * @param{PointerEvent} e
+		 * @returns{void}
+		 */
+		#handleChangeEventOnToolBar(e) {
+			const targetEl = /**@type{HTMLElement | null}*/ (e.target);
+			if (targetEl === null) {
+				console.error(
+					"The an attempt to access the targeted element returned a null value",
+				);
+				return;
+			}
 
-		#handleClickEventOnToolBar() {}
+			const targetedDataAttribute = targetEl.dataset;
+
+			switch (true) {
+				case "data-button-clear-canvas" in targetedDataAttribute:
+					const result = window.confirm(
+						"Are you sure you would like to clear drawing, doing so will perminently delete it?",
+					);
+					if (result === true) {
+						this.#drawing.strokes = [];
+						try {
+							localStorage.setItem(
+								this.#drawing.name,
+								JSON.stringify(this.#drawing),
+							);
+						} catch (e) {
+							console.error(e);
+							return;
+						}
+					}
+
+					break;
+				case "data-input-upload-file" in targetedDataAttribute:
+					break;
+				case "data-button-save-file" in targetedDataAttribute:
+					break;
+				case "data-slider-pencil" in targetedDataAttribute:
+					break;
+				case "data-slider-eraser" in targetedDataAttribute:
+					break;
+				case "data-input-stroke-weight" in targetedDataAttribute:
+					break;
+				default:
+					console.error("Unhandled event target: ", targetEl);
+					break;
+			}
+		}
+
+		/**
+		 * @param{PointerEvent} e
+		 * @returns{void}
+		 */
+		#handleClickEventOnToolBar(e) {
+			const targetEl = /**@type{HTMLElement | null}*/ (e.target);
+			if (targetEl === null) {
+				console.error(
+					"The an attempt to access the targeted element returned a null value",
+				);
+				return;
+			}
+
+			const targetedDataAttribute = targetEl.dataset;
+
+			switch (true) {
+				case "buttonClearCanvas" in targetedDataAttribute:
+					const result = window.confirm(
+						"Are you sure you would like to clear drawing, doing so will perminently delete it?",
+					);
+					console.log("result:", result);
+					if (result === true) {
+						this.#drawing.strokes = [];
+						try {
+							localStorage.setItem(
+								this.#drawing.name,
+								JSON.stringify(this.#drawing),
+							);
+						} catch (e) {
+							console.error(e);
+							return;
+						}
+						this.ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+					}
+
+					break;
+				case "inputUploadFile" in targetedDataAttribute:
+					break;
+				case "buttonSaveFile" in targetedDataAttribute:
+					break;
+				case "sliderPencil" in targetedDataAttribute:
+					break;
+				case "sliderEraser" in targetedDataAttribute:
+					break;
+				case "inputStrokeWeight" in targetedDataAttribute:
+					break;
+				default:
+					console.error(
+						"Unhandled event target: ",
+						targetEl,
+						"\nTarget element dataset: ",
+						targetEl.dataset,
+					);
+					break;
+			}
+		}
 	}
 
 	function main() {
