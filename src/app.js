@@ -492,6 +492,7 @@
 					};
 
 					fileReader.onload = function () {
+						console.log("triggered");
 						const file = /**@type{string}*/ (fileReader.result);
 						const parsedFile = JSON.parse(file);
 
@@ -640,6 +641,11 @@
 							}
 						}
 					};
+
+					if (uploadFileInput.files === null) {
+						console.error("There was no file uploaded");
+						return;
+					}
 
 					fileReader.readAsText(uploadFileInput.files[0]);
 					break;
