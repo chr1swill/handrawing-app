@@ -581,39 +581,36 @@
 							},
 						],
 					});
-					//@ts-ignore
-					const saveFile = await (async function writeFile(fileHandle) {
-						//@ts-ignore
-						const writable = await fileHandle.createWritable();
-						const data = localStorage.getItem(self.#currentDrawing);
-						if (data === null) {
-							console.error(
-								`There is no data in localStorage key: ${self.#currentDrawing}`,
-							);
-							alert(
-								"Could not save file, the name is not in localStorage currently",
-							);
-							return;
-						}
 
-						let wroteData;
-						try {
-							wroteData = await writable.write(data);
-						} catch (e) {
-							wroteData = null;
-							console.error(e);
-							return;
-						} finally {
-							writable.close();
-						}
+					const writable = await fileHandle.createWritable();
+					const data = localStorage.getItem(self.#currentDrawing);
+					if (data === null) {
+						console.error(
+							`There is no data in localStorage key: ${self.#currentDrawing}`,
+						);
+						alert(
+							"Could not save file, the name is not in localStorage currently",
+						);
+						return;
+					}
 
-						if (wroteData === null) {
-							console.error("Failed to write data");
-							return;
-						}
+					let wroteData;
+					try {
+						wroteData = await writable.write(data);
+					} catch (e) {
+						wroteData = null;
+						console.error(e);
+						return;
+					} finally {
+						writable.close();
+					}
 
-						alert("Drawing save successfully!");
-					})();
+					if (wroteData === null) {
+						console.error("Failed to write data");
+						return;
+					}
+
+					alert("Drawing save successfully!");
 				} catch (e) {
 					console.error(e);
 					return;
