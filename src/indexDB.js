@@ -446,7 +446,8 @@
 									} catch (e) {
 										console.error(e);
 
-										self.#currentDrawing = self.#drawing.name;
+										self.#drawing.name = self.#currentDrawing;
+										self.#drawing.strokes = [];
 
 										/**@type{IDBRequest<IDBValidKey>}*/
 										let updatedCurrentDrawing;
