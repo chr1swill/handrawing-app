@@ -139,6 +139,27 @@
 				this.#drawingMode = /**@type{DrawingActionT}*/ (storedDrawingMode);
 			} else {
 				this.#drawingMode = /**@type{DrawingActionT}*/ (storedDrawingMode);
+				if ((storedDrawingMode = DrawingAction.ERASE)) {
+					const overlay2 = /**@type{HTMLElement|null}*/ (
+						document.querySelector("[data-slider-overlay]")
+					);
+					if (overlay2 === null) {
+						console.error(
+							"Could not find element with attribute: data-slider-overlay",
+						);
+						return;
+					}
+
+					const span2 = overlay2.querySelector("span");
+					if (span2 === null) {
+						console.error("Could not find span inside overlay");
+						return;
+					}
+
+					overlay2.style.justifyContent = "flex-end";
+					span2.style.transform = "translateX(-4px)";
+					this.ctx.globalCompositeOperation = "destination-out";
+				}
 			}
 
 			const screenRatioAsString = localStorage.getItem(
