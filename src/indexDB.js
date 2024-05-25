@@ -84,16 +84,18 @@
 
 					// Initialize IndexedDB
 
+					const self = this;
+
 					try {
 						const storedStrokeWeight = /**@type{IDBRequest<number>}*/ (
 							store.get(IDBKeys.strokeWeight)
 						);
 
 						storedStrokeWeight.onerror = function () {
-							this.#strokeWeight = 5;
+							self.#strokeWeight = 5;
 
 							const updatedStrokeWeight = store.put(
-								this.#strokeWeight,
+								self.#strokeWeight,
 								IDBKeys.strokeWeight,
 							);
 
@@ -112,7 +114,7 @@
 						};
 
 						storedStrokeWeight.onsuccess = function () {
-							this.strokeWeight = storedStrokeWeight.result;
+							self.#strokeWeight = storedStrokeWeight.result;
 						};
 					} catch (e) {
 						console.error(e);
@@ -125,10 +127,10 @@
 						);
 
 						storedStrokeColor.onerror = function () {
-							this.#strokeColor = "black";
+							self.#strokeColor = "black";
 
 							const updatedStrokeColor = store.put(
-								this.strokeColor,
+								self.#strokeColor,
 								IDBKeys.strokeColor,
 							);
 
@@ -140,14 +142,14 @@
 							updatedStrokeColor.onsuccess = function () {
 								console.log(
 									"The updated values of stroke color: ",
-									updatedStrokeWeight.result,
+									updatedStrokeColor.result,
 								);
 								return;
 							};
 						};
 
 						storedStrokeColor.onsuccess = function () {
-							this.#strokeColor = storedStrokeColor.result;
+							self.#strokeColor = storedStrokeColor.result;
 						};
 					} catch (e) {
 						console.error(e);
@@ -159,6 +161,7 @@
 					);
 
 					storedDrawingMode.onerror = function () {};
+
 					storedDrawingMode.onsuccess = function () {};
 
 					if (storedDrawingMode === undefined) {
