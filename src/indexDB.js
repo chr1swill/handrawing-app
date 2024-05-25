@@ -193,12 +193,39 @@
 						return;
 					}
 
-					let screenRatioAsString = await store.get(IDBKeys.screenRatio);
-					if (screenRatioAsString === undefined) {
-						this.#screenRatio = window.devicePixelRatio;
-						await store.put(this.#screenRatio, IDBKeys.screenRatio);
-					} else {
-						this.#screenRatio = screenRatioAsString;
+					try {
+						const storedScreenRatio = /**@type{IDBRequest<number>}*/ (
+							store.get(IDBKeys.screenRatio)
+						);
+
+						storedScreenRatio.onerror = function () {
+							self.#screenRatio = window.devicePixelRatio;
+
+							const updatedScreenRatio = store.put(
+								self.#screenRatio,
+								IDBKeys.screenRatio,
+							);
+
+							updatedScreenRatio.onerror = function () {
+								console.error(updatedScreenRatio.error);
+								return;
+							};
+
+							updatedScreenRatio.onsuccess = function () {
+								console.log(
+									"The updated value of the screen ratio: ",
+									updatedScreenRatio.result,
+								);
+								return;
+							};
+						};
+
+						storedScreenRatio.onsuccess = function () {
+							self.#screenRatio = storedScreenRatio.result;
+						};
+					} catch (e) {
+						console.error(e);
+						return;
 					}
 
 					this.#canvasRect = canvas.getBoundingClientRect();
