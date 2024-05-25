@@ -469,6 +469,63 @@
 
 					break;
 				case "inputUploadFile" in targetedDataAttribute:
+					const uploadFileInput = /**@type{HTMLInputElement | null}*/ (
+						document.querySelector("input [data-input-upload-file]")
+					);
+					if (uploadFileInput === null) {
+						console.error(
+							"Could not find input element with data attribute: data-input-upload-file",
+						);
+						return;
+					}
+
+					if (uploadFileInput.files?.length !== 1) {
+						console.error("You must upload a single file to be processed");
+						return;
+					}
+
+					const fileReader = new FileReader();
+
+					fileReader.onerror = function () {
+						console.error(fileReader.error);
+						return;
+					};
+
+					fileReader.onloadend = function () {
+						const file = /**@type{string}*/ (fileReader.result);
+						const parsedFile = JSON.parse(file);
+
+						// verify shape
+						if (
+							typeof parsedFile !== "object" ||
+							!("name" in parsedFile) ||
+							!("strokes" in parsedFile) ||
+							typeof parsedFile.name !== "string" ||
+							typeof parsedFile.stroke !== "object"
+						) {
+							console.error(
+								"Invalid file was provided, file could not be uploaded",
+							);
+							return;
+						}
+
+						const verifiedFile = /**@type{DrawingT}*/ (parsedFile);
+
+						const checkIfFileWithSameNameInLocalStorage = localStorage.getItem(verifiedFile.name);
+                        if (checkIfFileWithSameNameInLocalStorage !== null) {
+                            // let them change name > keep both
+                            // replace file > keep uploaded file
+                            // abort > keep old file
+                            //
+                            // PROMPTS: 
+                            // You current have a drawing with the name as the file you just uploaded, would you like to keep both?
+                            // would you like to replace the old file with the file you just uploaded?
+                            // please select a new name for the uploaded file ( must not match any of the keys in local storage you must verify the inputed name )
+                        }
+
+					};
+
+					fileReader.readAsText(uploadFileInput.files[0]);
 					break;
 				case "buttonSaveFile" in targetedDataAttribute:
 					let fileName;
