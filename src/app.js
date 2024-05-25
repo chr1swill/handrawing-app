@@ -511,18 +511,19 @@
 
 						const verifiedFile = /**@type{DrawingT}*/ (parsedFile);
 
-						const checkIfFileWithSameNameInLocalStorage = localStorage.getItem(verifiedFile.name);
-                        if (checkIfFileWithSameNameInLocalStorage !== null) {
-                            // let them change name > keep both
-                            // replace file > keep uploaded file
-                            // abort > keep old file
-                            //
-                            // PROMPTS: 
-                            // You current have a drawing with the name as the file you just uploaded, would you like to keep both?
-                            // would you like to replace the old file with the file you just uploaded?
-                            // please select a new name for the uploaded file ( must not match any of the keys in local storage you must verify the inputed name )
-                        }
-
+						const checkIfFileWithSameNameInLocalStorage = localStorage.getItem(
+							verifiedFile.name,
+						);
+						if (checkIfFileWithSameNameInLocalStorage !== null) {
+							// let them change name > keep both
+							// replace file > keep uploaded file
+							// abort > keep old file
+							//
+							// PROMPTS:
+							// You current have a drawing with the name as the file you just uploaded, would you like to keep both?
+							// would you like to replace the old file with the file you just uploaded?
+							// please select a new name for the uploaded file ( must not match any of the keys in local storage you must verify the inputed name )
+						}
 					};
 
 					fileReader.readAsText(uploadFileInput.files[0]);
