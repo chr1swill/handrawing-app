@@ -367,18 +367,6 @@
 		}
 
 		#redrawCanvas() {
-			console.log(`find case:
-            currentDrawing: ${this.#currentDrawing}
-            drawing.name: ${this.#drawing.name}
-            localStorage get: ${localStorage.getItem(this.#currentDrawing) === null}
-            `);
-
-			console.log(
-				"localStorage get value",
-				//@ts-ignore
-				JSON.parse(localStorage.getItem(this.#currentDrawing)),
-			);
-
 			if (
 				this.#currentDrawing === "" ||
 				this.#drawing.name === "" ||
@@ -386,7 +374,6 @@
 			) {
 				let drawingName;
 				retryPrompt: while (!drawingName || drawingName === "") {
-					console.log("first retry loop");
 					drawingName = prompt("Choose a name for your new drawing");
 					if (drawingName && localStorage.getItem(drawingName) !== null) {
 						console.warn(
