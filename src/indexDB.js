@@ -263,13 +263,65 @@
 						return;
 					}
 
-					let storedDrawing = await store.get(IDBKeys.currentDrawing);
-					if (storedDrawing === undefined) {
-						this.#currentDrawing = this.#drawing.name;
-					} else {
-						const storedDrawingAsObject = storedDrawing;
-						this.#currentDrawing = storedDrawingAsObject.name;
-						this.#drawing = storedDrawingAsObject;
+					try {
+						const storedCurrentDrawing = /**@type{IDBRequest<string>}*/ (
+							store.get(IDBKeys.currentDrawing)
+						);
+
+						storedCurrentDrawing.onerror = function () {
+							self.#currentDrawing = self.#drawing.name;
+
+							const updatedCurrentDrawing = store.put(
+								self.#currentDrawing,
+								IDBKeys.currentDrawing,
+							);
+
+							updatedCurrentDrawing.onerror = function () {
+								console.error(updatedCurrentDrawing.error);
+								return;
+							};
+
+							updatedCurrentDrawing.onsuccess = function () {
+								console.log(
+									"Updated current drawing name value: ",
+									updatedCurrentDrawing.result,
+								);
+								return;
+							};
+						};
+
+						storedCurrentDrawing.onsuccess = function () {
+							self.#currentDrawing = storedCurrentDrawing.result;
+
+							self
+								.#openIndexedDB()
+								.then(async (db) => {
+									const tx = db.transaction("drawings", "readwrite");
+									/**@type{IDBObjectStore}*/
+									const store = tx.objectStore("drawings");
+
+									const storedDrawing = /**@type{IDBRequest<DrawingT>}*/ (
+										store.get(self.#currentDrawing)
+									);
+
+									storedDrawing.onerror = function () {
+										console.error(storedDrawing.error);
+										return;
+									};
+
+									storedDrawing.onsuccess = function () {
+										self.#drawing.name = storedDrawing.result.name;
+										self.#drawing.strokes = storedDrawing.result.strokes;
+									};
+								})
+								.catch((e) => {
+									console.error(e);
+									return;
+								});
+						};
+					} catch (e) {
+						console.error(e);
+						return;
 					}
 
 					this.ctx.lineWidth = this.#strokeWeight;
