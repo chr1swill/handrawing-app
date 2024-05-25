@@ -742,11 +742,11 @@
 
 				case "inputStrokeWeight" in targetedDataAttribute:
 					const strokeWeightInput = /**@type{HTMLInputElement | null}*/ (
-						document.querySelector("input [data-input-stroke-weight]")
+						document.querySelector("[data-input-stroke-weight]")
 					);
 					if (strokeWeightInput === null) {
 						console.error(
-							"Could not find input element with data attribute: data-input-stroke-weight",
+							"Could not find input element with data attribute: [data-input-stroke-weight]",
 						);
 						return;
 					}
