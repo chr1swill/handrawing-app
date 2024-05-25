@@ -522,7 +522,6 @@
 					const result = window.confirm(
 						"Are you sure you would like to clear drawing, doing so will perminently delete it?",
 					);
-					console.log("result:", result);
 					if (result === true) {
 						this.#drawing.strokes = [];
 						try {
