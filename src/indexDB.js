@@ -687,9 +687,7 @@
 					await store.put(this.#screenRatio, IDBKeys.screenRatio);
 				} catch (e) {
 					console.error(e);
-					throw new Error(
-						`An error occurred when attempting to update the value of IndexedDB key: ${IDBKeys.screenRatio}`,
-					);
+					return;
 				}
 
 				const width = window.innerWidth * this.#screenRatio;
@@ -707,68 +705,73 @@
 		}
 
 		#redrawCanvas() {
-			this.#openIndexedDB().then(async (db) => {
+			const self = this;
+			self.#openIndexedDB().then(async (db) => {
 				const tx = db.transaction("drawings", "readonly");
 				const store = tx.objectStore("drawings");
 
-				const storedDrawingAsString = await store.get(this.#currentDrawing);
-				if (storedDrawingAsString === undefined) {
+				const storedDrawing = /**@type{IDBRequest<DrawingT>}*/ (
+					store.get(self.#currentDrawing)
+				);
+				if (storedDrawing === undefined) {
 					console.error(
 						"Could not find any keys in IndexedDB with the name: ",
-						this.#currentDrawing,
+						self.#currentDrawing,
 					);
 					return;
 				}
 
-				const parsedStoredDrawing = storedDrawingAsString;
-				if (
-					!("name" in parsedStoredDrawing && "strokes" in parsedStoredDrawing)
-				) {
-					throw Error(
-						"The current drawing was not of type DrawingT, could not redraw to canvas",
-					);
-				}
-
-				this.#drawing = parsedStoredDrawing;
-
-				const arrayOfStrokes = this.#drawing.strokes;
-				let i = 0;
-				strokeArrayLoop: while (i < arrayOfStrokes.length) {
-					const currentStroke = arrayOfStrokes[i];
-					this.ctx.lineCap = "round";
-					this.ctx.lineWidth = currentStroke.weight;
-
-					switch (currentStroke.drawingMode) {
-						case DrawingAction.DRAW:
-							this.ctx.globalCompositeOperation = "source-over";
-							break;
-						case DrawingAction.ERASE:
-							this.ctx.globalCompositeOperation = "destination-out";
-							break;
-						default:
-							console.error(
-								"Invalid drawing mode was detected, could not draw current stroke",
-							);
-							continue strokeArrayLoop;
+				storedDrawing.onsuccess = function () {
+					const parsedStoredDrawing = storedDrawing.result;
+					if (
+						!("name" in parsedStoredDrawing && "strokes" in parsedStoredDrawing)
+					) {
+						throw Error(
+							"The current drawing was not of type DrawingT, could not redraw to canvas",
+						);
 					}
 
-					let j = 0;
-					const currentStrokeArrayOfPoints = currentStroke.points;
-					const currentStrokeArrayOfPointsLength =
-						currentStrokeArrayOfPoints.length;
-					while (j < currentStrokeArrayOfPointsLength - 1) {
-						const currentPoint = currentStrokeArrayOfPoints[j];
-						const nextPoint = currentStrokeArrayOfPoints[j + 1];
-						this.ctx.beginPath();
-						this.ctx.moveTo(currentPoint.x, currentPoint.y);
-						this.ctx.lineTo(nextPoint.x, nextPoint.y);
-						this.ctx.stroke();
+					self.#drawing = /**@type{DrawingT}*/ (parsedStoredDrawing);
 
-						j++;
+					const arrayOfStrokes = self.#drawing.strokes;
+					let i = 0;
+					strokeArrayLoop: while (i < arrayOfStrokes.length) {
+						const currentStroke = arrayOfStrokes[i];
+						self.ctx.lineCap = "round";
+						self.ctx.lineWidth = currentStroke.weight;
+
+						switch (currentStroke.drawingMode) {
+							case DrawingAction.DRAW:
+								self.ctx.globalCompositeOperation = "source-over";
+								break;
+							case DrawingAction.ERASE:
+								self.ctx.globalCompositeOperation = "destination-out";
+								break;
+							default:
+								console.error(
+									"Invalid drawing mode was detected, could not draw current stroke",
+								);
+								continue strokeArrayLoop;
+						}
+
+						let j = 0;
+						const currentStrokeArrayOfPoints = currentStroke.points;
+						const currentStrokeArrayOfPointsLength =
+							currentStrokeArrayOfPoints.length;
+						while (j < currentStrokeArrayOfPointsLength - 1) {
+							const currentPoint = currentStrokeArrayOfPoints[j];
+							const nextPoint = currentStrokeArrayOfPoints[j + 1];
+							self.ctx.beginPath();
+							self.ctx.moveTo(currentPoint.x, currentPoint.y);
+							self.ctx.lineTo(nextPoint.x, nextPoint.y);
+							self.ctx.stroke();
+
+							j++;
+						}
+
+						i++;
 					}
-
-					i++;
-				}
+				};
 			});
 		}
 
