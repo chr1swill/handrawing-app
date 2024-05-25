@@ -245,6 +245,10 @@
 				{ passive: false },
 			);
 
+			this.canvas.addEventListener("contextmenu", function (e) {
+				e.preventDefault();
+			});
+
 			this.canvas.addEventListener("dblclick", function (e) {
 				e.preventDefault();
 			});
