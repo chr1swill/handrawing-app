@@ -654,9 +654,70 @@
 					break;
 
 				case "sliderPencil" in targetedDataAttribute:
+					let overlay = /**@type{HTMLElement|null}*/ (
+						document.querySelector("[data-slider-overlay]")
+					);
+					if (overlay === null) {
+						console.error(
+							"Could not find element with attribute: data-slider-overlay",
+						);
+						return;
+					}
+
+					let span = overlay.querySelector("span");
+					if (span === null) {
+						console.error("Could not find span inside overlay");
+						return;
+					}
+
+					overlay.style.justifyContent = "flex-start";
+					span.style.transform = "translateX(4px)";
+					self.ctx.globalCompositeOperation = "source-over";
+
+					self.#drawingMode = DrawingAction.DRAW;
+					try {
+						localStorage.setItem(
+							localStorageKeys.drawingMode,
+							self.#drawingMode,
+						);
+					} catch (e) {
+						console.error(e);
+						return;
+					}
+
 					break;
 
 				case "sliderEraser" in targetedDataAttribute:
+					overlay = /**@type{HTMLElement|null}*/ (
+						document.querySelector("[data-slider-overlay]")
+					);
+					if (overlay === null) {
+						console.error(
+							"Could not find element with attribute: data-slider-overlay",
+						);
+						return;
+					}
+
+					span = overlay.querySelector("span");
+					if (span === null) {
+						console.error("Could not find span inside overlay");
+						return;
+					}
+
+					overlay.style.justifyContent = "flex-end";
+					span.style.transform = "translateX(-4px)";
+					self.ctx.globalCompositeOperation = "destination-out";
+
+					self.#drawingMode = DrawingAction.ERASE;
+					try {
+						localStorage.setItem(
+							localStorageKeys.drawingMode,
+							self.#drawingMode,
+						);
+					} catch (e) {
+						console.error(e);
+						return;
+					}
 					break;
 
 				case "inputStrokeWeight" in targetedDataAttribute:
