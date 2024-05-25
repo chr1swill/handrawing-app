@@ -118,7 +118,32 @@
 						};
 					} catch (e) {
 						console.error(e);
-						return;
+						self.#strokeWeight = 5;
+
+						/**@type{IDBRequest<IDBValidKey>}*/
+						let updatedStrokeWeight;
+						try {
+							updatedStrokeWeight = store.put(
+								self.#strokeWeight,
+								IDBKeys.strokeWeight,
+							);
+						} catch (e) {
+							console.error(e);
+							return;
+						}
+
+						updatedStrokeWeight.onerror = function () {
+							console.error(updatedStrokeWeight.error);
+							return;
+						};
+
+						updatedStrokeWeight.onsuccess = function () {
+							console.log(
+								"The updated values of stroke weight: ",
+								updatedStrokeWeight.result,
+							);
+							return;
+						};
 					}
 
 					try {
@@ -153,7 +178,32 @@
 						};
 					} catch (e) {
 						console.error(e);
-						return;
+						self.#strokeColor = "black";
+
+						/**@type{IDBRequest<IDBValidKey>}*/
+						let updatedStrokeColor;
+						try {
+							updatedStrokeColor = store.put(
+								self.#strokeColor,
+								IDBKeys.strokeColor,
+							);
+
+							updatedStrokeColor.onerror = function () {
+								console.error(updatedStrokeColor.error);
+								return;
+							};
+
+							updatedStrokeColor.onsuccess = function () {
+								console.log(
+									"The updated values of stroke color: ",
+									updatedStrokeColor.result,
+								);
+								return;
+							};
+						} catch (e) {
+							console.error(e);
+							return;
+						}
 					}
 
 					try {
@@ -190,7 +240,32 @@
 						};
 					} catch (e) {
 						console.error(e);
-						return;
+						self.#drawingMode = DrawingAction.DRAW;
+
+						/**@type{IDBRequest<IDBValidKey>}*/
+						let updateDrawingMode;
+						try {
+							updateDrawingMode = store.put(
+								self.#drawingMode,
+								IDBKeys.drawingMode,
+							);
+
+							updateDrawingMode.onerror = function () {
+								console.error(updateDrawingMode.error);
+								return;
+							};
+
+							updateDrawingMode.onsuccess = function () {
+								console.log(
+									"The updated value of drawing mode: ",
+									updateDrawingMode.result,
+								);
+								return;
+							};
+						} catch (e) {
+							console.error(e);
+							return;
+						}
 					}
 
 					try {
@@ -225,7 +300,33 @@
 						};
 					} catch (e) {
 						console.error(e);
-						return;
+
+						self.#screenRatio = window.devicePixelRatio;
+
+						/**@type{IDBRequest<IDBValidKey>}*/
+						let updatedScreenRatio;
+						try {
+							updatedScreenRatio = store.put(
+								self.#screenRatio,
+								IDBKeys.screenRatio,
+							);
+
+							updatedScreenRatio.onerror = function () {
+								console.error(updatedScreenRatio.error);
+								return;
+							};
+
+							updatedScreenRatio.onsuccess = function () {
+								console.log(
+									"The updated value of the screen ratio: ",
+									updatedScreenRatio.result,
+								);
+								return;
+							};
+						} catch (e) {
+							console.error(e);
+							return;
+						}
 					}
 
 					try {
@@ -260,7 +361,33 @@
 						};
 					} catch (e) {
 						console.error(e);
-						return;
+
+						self.#canvasRect = self.canvas.getBoundingClientRect();
+
+						/**@type{IDBRequest<IDBValidKey>}*/
+						let updateCanvasRect;
+						try {
+							updateCanvasRect = store.put(
+								self.#canvasRect,
+								IDBKeys.canvasRect,
+							);
+
+							updateCanvasRect.onerror = function () {
+								console.error(updateCanvasRect.error);
+								return;
+							};
+
+							updateCanvasRect.onsuccess = function () {
+								console.log(
+									"Updated value of the canvas rect: ",
+									updateCanvasRect.result,
+								);
+								return;
+							};
+						} catch (e) {
+							console.error(e);
+							return;
+						}
 					}
 
 					try {
@@ -300,8 +427,10 @@
 									/**@type{IDBObjectStore}*/
 									const store = tx.objectStore("drawings");
 
+									/**@type{IDBRequest<DrawingT>}*/
+									let storedDrawing;
 									try {
-										const storedDrawing = /**@type{IDBRequest<DrawingT>}*/ (
+										storedDrawing = /**@type{IDBRequest<DrawingT>}*/ (
 											store.get(self.#currentDrawing)
 										);
 
@@ -316,7 +445,33 @@
 										};
 									} catch (e) {
 										console.error(e);
-										return;
+
+										self.#currentDrawing = self.#drawing.name;
+
+										/**@type{IDBRequest<IDBValidKey>}*/
+										let updatedCurrentDrawing;
+										try {
+											updatedCurrentDrawing = store.put(
+												self.#drawing,
+												self.#drawing.name,
+											);
+
+											updatedCurrentDrawing.onerror = function () {
+												console.error(updatedCurrentDrawing.error);
+												return;
+											};
+
+											updatedCurrentDrawing.onsuccess = function () {
+												console.log(
+													"Updated current drawing name value: ",
+													updatedCurrentDrawing.result,
+												);
+												return;
+											};
+										} catch (e) {
+											console.error(e);
+											return;
+										}
 									}
 								})
 								.catch((e) => {
@@ -326,7 +481,33 @@
 						};
 					} catch (e) {
 						console.error(e);
-						return;
+
+						self.#currentDrawing = self.#drawing.name;
+
+						/**@type{IDBRequest<IDBValidKey>}*/
+						let updatedCurrentDrawing;
+						try {
+							updatedCurrentDrawing = store.put(
+								self.#currentDrawing,
+								IDBKeys.currentDrawing,
+							);
+
+							updatedCurrentDrawing.onerror = function () {
+								console.error(updatedCurrentDrawing.error);
+								return;
+							};
+
+							updatedCurrentDrawing.onsuccess = function () {
+								console.log(
+									"Updated current drawing name value: ",
+									updatedCurrentDrawing.result,
+								);
+								return;
+							};
+						} catch (e) {
+							console.error(e);
+							return;
+						}
 					}
 
 					this.ctx.lineWidth = this.#strokeWeight;
