@@ -156,19 +156,42 @@
 						return;
 					}
 
-					const storedDrawingMode = /**@type{IDBRequest<string>}*/ (
-						store.get(IDBKeys.drawingMode)
-					);
+					try {
+						const storedDrawingMode = /**@type{IDBRequest<string>}*/ (
+							store.get(IDBKeys.drawingMode)
+						);
 
-					storedDrawingMode.onerror = function () {};
+						storedDrawingMode.onerror = function () {
+							self.#drawingMode = DrawingAction.DRAW;
 
-					storedDrawingMode.onsuccess = function () {};
+							const updateDrawingMode = store.put(
+								self.#drawingMode,
+								IDBKeys.drawingMode,
+							);
 
-					if (storedDrawingMode === undefined) {
-						storedDrawingMode = DrawingAction.DRAW;
-						await store.put(storedDrawingMode, IDBKeys.drawingMode);
+							updateDrawingMode.onerror = function () {
+								console.error(updateDrawingMode.error);
+								return;
+							};
+
+							updateDrawingMode.onsuccess = function () {
+								console.log(
+									"The updated value of drawing mode: ",
+									updateDrawingMode.result,
+								);
+								return;
+							};
+						};
+
+						storedDrawingMode.onsuccess = function () {
+							self.#drawingMode = /**@type{DrawingActionT}*/ (
+								storedDrawingMode.result
+							);
+						};
+					} catch (e) {
+						console.error(e);
+						return;
 					}
-					this.#drawingMode = storedDrawingMode;
 
 					let screenRatioAsString = await store.get(IDBKeys.screenRatio);
 					if (screenRatioAsString === undefined) {
