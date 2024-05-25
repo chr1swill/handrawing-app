@@ -496,6 +496,7 @@
 						const file = /**@type{string}*/ (fileReader.result);
 						const parsedFile = JSON.parse(file);
 
+						console.log("triggered", parsedFile);
 						// verify shape
 						if (
 							typeof parsedFile !== "object" ||
@@ -519,6 +520,10 @@
 						const checkIfFileWithSameNameInLocalStorage = localStorage.getItem(
 							verifiedFile.name,
 						);
+						console.log(
+							"checking if files is in returned a file: ",
+							checkIfFileWithSameNameInLocalStorage,
+						);
 						if (checkIfFileWithSameNameInLocalStorage !== null) {
 							// let them change name > keep both
 							// replace file > keep uploaded file
@@ -529,12 +534,9 @@
 							// would you like to replace the old file with the file you just uploaded?
 							// please select a new name for the uploaded file ( must not match any of the keys in local storage you must verify the inputed name )
 
-							let confirmOne = undefined;
-							while ((confirmOne = undefined)) {
-								confirmOne = window.confirm(
-									"You current have a drawing with the same name as the uploaded drawing, would you like to keep both of them?",
-								);
-							}
+							const confirmOne = window.confirm(
+								"You current have a drawing with the same name as the uploaded drawing, would you like to keep both of them?",
+							);
 
 							if (confirmOne === true) {
 								/**@type{string | null}*/
@@ -574,12 +576,9 @@
 								self.#redrawCanvas();
 								return;
 							} else {
-								let confirmTwo;
-								while ((confirmTwo = undefined)) {
-									confirmTwo = window.confirm(
-										"Would you like to replace the old drawing with the drawing you just uploaded? (Doing this will permanently default the old drawing)",
-									);
-								}
+								const confirmTwo = window.confirm(
+									"Would you like to replace the old drawing with the drawing you just uploaded? (Doing this will permanently default the old drawing)",
+								);
 
 								if (confirmTwo === true) {
 									try {
@@ -590,12 +589,9 @@
 
 									return;
 								} else {
-									let confirmThree;
-									while ((confirmThree = undefined)) {
-										confirmTwo = window.confirm(
-											"Would you like to replace the old drawing with the drawing you just uploaded? (Doing this will permanently default the old drawing)",
-										);
-									}
+									const confirmThree = window.confirm(
+										"Would you like to replace the old drawing with the drawing you just uploaded? (Doing this will permanently default the old drawing)",
+									);
 
 									if (confirmThree === true) {
 										/**@type{string | null}*/
@@ -639,6 +635,8 @@
 									}
 								}
 							}
+						} else {
+							console.log("Drawing uploaded");
 						}
 					};
 
