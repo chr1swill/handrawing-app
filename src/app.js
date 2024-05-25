@@ -209,22 +209,38 @@
 			this.ctx.strokeStyle = this.#strokeColor;
 			this.ctx.lineCap = "round";
 
-			this.canvas.addEventListener("pointerdown", (e) => {
-				e.preventDefault();
-				this.#startDrawing(e);
-			});
-			this.canvas.addEventListener("pointerup", (e) => {
-				e.preventDefault();
-				this.#stopDrawing();
-			});
-			this.canvas.addEventListener("pointercancel", (e) => {
-				e.preventDefault();
-				this.#stopDrawing();
-			});
-			this.canvas.addEventListener("pointermove", (e) => {
-				e.preventDefault();
-				this.#draw(e);
-			});
+			this.canvas.addEventListener(
+				"pointerdown",
+				(e) => {
+					e.preventDefault();
+					this.#startDrawing(e);
+				},
+				{ passive: false },
+			);
+			this.canvas.addEventListener(
+				"pointerup",
+				(e) => {
+					e.preventDefault();
+					this.#stopDrawing();
+				},
+				{ passive: false },
+			);
+			this.canvas.addEventListener(
+				"pointercancel",
+				(e) => {
+					e.preventDefault();
+					this.#stopDrawing();
+				},
+				{ passive: false },
+			);
+			this.canvas.addEventListener(
+				"pointermove",
+				(e) => {
+					e.preventDefault();
+					this.#draw(e);
+				},
+				{ passive: false },
+			);
 
 			this.canvas.addEventListener("dblclick", function (e) {
 				e.preventDefault();
