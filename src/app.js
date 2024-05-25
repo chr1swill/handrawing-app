@@ -492,11 +492,9 @@
 					};
 
 					fileReader.onload = function () {
-						console.log("triggered");
 						const file = /**@type{string}*/ (fileReader.result);
 						const parsedFile = JSON.parse(file);
 
-						console.log("triggered", parsedFile);
 						// verify shape
 						if (
 							typeof parsedFile !== "object" ||
@@ -509,9 +507,6 @@
 								"Invalid file was provided, file could not be uploaded",
 								parsedFile,
 							);
-							console.log(`
-                            type of parsedFile !== 'object' ${!(typeof parsedFile === "object")}
-                            `);
 							return;
 						}
 
@@ -519,10 +514,6 @@
 
 						const checkIfFileWithSameNameInLocalStorage = localStorage.getItem(
 							verifiedFile.name,
-						);
-						console.log(
-							"checking if files is in returned a file: ",
-							checkIfFileWithSameNameInLocalStorage,
 						);
 						if (checkIfFileWithSameNameInLocalStorage !== null) {
 							// let them change name > keep both
@@ -587,6 +578,9 @@
 										console.error(e);
 									}
 
+									self.#drawing = verifiedFile;
+
+									self.#redrawCanvas();
 									return;
 								} else {
 									const confirmThree = window.confirm(
@@ -636,7 +630,28 @@
 								}
 							}
 						} else {
-							console.log("Drawing uploaded");
+							try {
+								localStorage.setItem(verifiedFile.name, file);
+							} catch (e) {
+								console.error(e);
+								return;
+							}
+
+							self.#drawing = verifiedFile;
+							self.#currentDrawing = verifiedFile.name;
+							try {
+								localStorage.setItem(
+									localStorageKeys.currentDrawing,
+									self.#currentDrawing,
+								);
+							} catch (e) {
+								console.error(e);
+								return;
+							}
+
+							self.#redrawCanvas();
+							alert("Drawing saved sucessfully");
+							return;
 						}
 					};
 
