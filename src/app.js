@@ -472,18 +472,15 @@
 					break;
 
 				case "inputUploadFile" in targetedDataAttribute:
+					if (e.type === "click") return;
+
 					const uploadFileInput = /**@type{HTMLInputElement | null}*/ (
-						document.querySelector("input [data-input-upload-file]")
+						document.querySelector("[data-input-upload-file] input")
 					);
 					if (uploadFileInput === null) {
 						console.error(
 							"Could not find input element with data attribute: data-input-upload-file",
 						);
-						return;
-					}
-
-					if (uploadFileInput.files?.length !== 1) {
-						console.error("You must upload a single file to be processed");
 						return;
 					}
 
@@ -494,7 +491,7 @@
 						return;
 					};
 
-					fileReader.onloadend = function () {
+					fileReader.onload = function () {
 						const file = /**@type{string}*/ (fileReader.result);
 						const parsedFile = JSON.parse(file);
 
@@ -504,11 +501,15 @@
 							!("name" in parsedFile) ||
 							!("strokes" in parsedFile) ||
 							typeof parsedFile.name !== "string" ||
-							typeof parsedFile.stroke !== "object"
+							typeof parsedFile.strokes !== "object"
 						) {
 							console.error(
 								"Invalid file was provided, file could not be uploaded",
+								parsedFile,
 							);
+							console.log(`
+                            type of parsedFile !== 'object' ${!(typeof parsedFile === "object")}
+                            `);
 							return;
 						}
 
@@ -528,7 +529,7 @@
 							// please select a new name for the uploaded file ( must not match any of the keys in local storage you must verify the inputed name )
 
 							let confirmOne = undefined;
-							while (!confirmOne) {
+							while ((confirmOne = undefined)) {
 								confirmOne = window.confirm(
 									"You current have a drawing with the same name as the uploaded drawing, would you like to keep both of them?",
 								);
@@ -573,7 +574,7 @@
 								return;
 							} else {
 								let confirmTwo;
-								while (!confirmTwo) {
+								while ((confirmTwo = undefined)) {
 									confirmTwo = window.confirm(
 										"Would you like to replace the old drawing with the drawing you just uploaded? (Doing this will permanently default the old drawing)",
 									);
@@ -589,7 +590,7 @@
 									return;
 								} else {
 									let confirmThree;
-									while (!confirmThree) {
+									while ((confirmThree = undefined)) {
 										confirmTwo = window.confirm(
 											"Would you like to replace the old drawing with the drawing you just uploaded? (Doing this will permanently default the old drawing)",
 										);
@@ -688,24 +689,24 @@
 					break;
 
 				case "sliderEraser" in targetedDataAttribute:
-					overlay = /**@type{HTMLElement|null}*/ (
+					const overlay2 = /**@type{HTMLElement|null}*/ (
 						document.querySelector("[data-slider-overlay]")
 					);
-					if (overlay === null) {
+					if (overlay2 === null) {
 						console.error(
 							"Could not find element with attribute: data-slider-overlay",
 						);
 						return;
 					}
 
-					span = overlay.querySelector("span");
-					if (span === null) {
+					const span2 = overlay2.querySelector("span");
+					if (span2 === null) {
 						console.error("Could not find span inside overlay");
 						return;
 					}
 
-					overlay.style.justifyContent = "flex-end";
-					span.style.transform = "translateX(-4px)";
+					overlay2.style.justifyContent = "flex-end";
+					span2.style.transform = "translateX(-4px)";
 					self.ctx.globalCompositeOperation = "destination-out";
 
 					self.#drawingMode = DrawingAction.ERASE;
