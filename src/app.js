@@ -13,24 +13,6 @@
 		currentDrawing: "currentDrawing",
 	});
 
-	/**
-	 * @typedef {Function} EventHandler
-	 * @param {PointerEvent} e
-	 * @returns{void}
-	 */
-
-	const eventdataIdJumpTable =
-		/**@type{Readonly<{[key: string]: EventHandler}>}*/ (
-			Object.freeze({
-				"data-button-clear-canvas": function (e) {},
-				"data-input-upload-file": function (e) {},
-				"data-button-save-file": function (e) {},
-				"data-slider-pencil": function (e) {},
-				"data-slider-eraser": function (e) {},
-				"data-input-stroke-weight": function (e) {},
-			})
-		);
-
 	class DrawingApp {
 		/**@type{number}*/
 		#strokeWeight = 5;
@@ -232,14 +214,13 @@
 				e.preventDefault();
 			});
 
-			this.toolBar.addEventListener(
-				"change",
-				this.#handleChangeEventOnToolBar.bind(this),
-			);
-			this.toolBar.addEventListener(
-				"click",
-				this.#handleClickEventOnToolBar.bind(this),
-			);
+			this.toolBar.addEventListener("change", (e) => {
+				this.#handleEventsOnToolBar(e);
+			});
+
+			this.toolBar.addEventListener("click", (e) => {
+				this.#handleEventsOnToolBar(e);
+			});
 
 			window.addEventListener("resize", () => {
 				const tm = setTimeout(() => {
@@ -453,60 +434,10 @@
 		}
 
 		/**
-		 * @param{PointerEvent} e
+		 * @param{Event} e
 		 * @returns{void}
 		 */
-		#handleChangeEventOnToolBar(e) {
-			const targetEl = /**@type{HTMLElement | null}*/ (e.target);
-			if (targetEl === null) {
-				console.error(
-					"The an attempt to access the targeted element returned a null value",
-				);
-				return;
-			}
-
-			const targetedDataAttribute = targetEl.dataset;
-
-			switch (true) {
-				case "data-button-clear-canvas" in targetedDataAttribute:
-					const result = window.confirm(
-						"Are you sure you would like to clear drawing, doing so will perminently delete it?",
-					);
-					if (result === true) {
-						this.#drawing.strokes = [];
-						try {
-							localStorage.setItem(
-								this.#drawing.name,
-								JSON.stringify(this.#drawing),
-							);
-						} catch (e) {
-							console.error(e);
-							return;
-						}
-					}
-
-					break;
-				case "data-input-upload-file" in targetedDataAttribute:
-					break;
-				case "data-button-save-file" in targetedDataAttribute:
-					break;
-				case "data-slider-pencil" in targetedDataAttribute:
-					break;
-				case "data-slider-eraser" in targetedDataAttribute:
-					break;
-				case "data-input-stroke-weight" in targetedDataAttribute:
-					break;
-				default:
-					console.error("Unhandled event target: ", targetEl);
-					break;
-			}
-		}
-
-		/**
-		 * @param{PointerEvent} e
-		 * @returns{void}
-		 */
-		#handleClickEventOnToolBar(e) {
+		#handleEventsOnToolBar(e) {
 			const targetEl = /**@type{HTMLElement | null}*/ (e.target);
 			if (targetEl === null) {
 				console.error(
