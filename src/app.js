@@ -470,6 +470,7 @@
 					}
 
 					break;
+
 				case "inputUploadFile" in targetedDataAttribute:
 					const uploadFileInput = /**@type{HTMLInputElement | null}*/ (
 						document.querySelector("input [data-input-upload-file]")
@@ -641,6 +642,7 @@
 
 					fileReader.readAsText(uploadFileInput.files[0]);
 					break;
+
 				case "buttonSaveFile" in targetedDataAttribute:
 					let fileName;
 					if (!("showSaveFilePicker" in window)) {
@@ -650,12 +652,37 @@
 					}
 					this.#saveToFile(fileName);
 					break;
+
 				case "sliderPencil" in targetedDataAttribute:
 					break;
+
 				case "sliderEraser" in targetedDataAttribute:
 					break;
+
 				case "inputStrokeWeight" in targetedDataAttribute:
+					const strokeWeightInput = /**@type{HTMLInputElement | null}*/ (
+						document.querySelector("input [data-input-stroke-weight]")
+					);
+					if (strokeWeightInput === null) {
+						console.error(
+							"Could not find input element with data attribute: data-input-stroke-weight",
+						);
+						return;
+					}
+
+					self.#strokeWeight = strokeWeightInput.valueAsNumber;
+					try {
+						localStorage.setItem(
+							localStorageKeys.strokeWeight,
+							strokeWeightInput.value,
+						);
+					} catch (e) {
+						console.error(e);
+						return;
+					}
+
 					break;
+
 				default:
 					console.error(
 						"Unhandled event target: ",
