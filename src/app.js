@@ -438,6 +438,8 @@
 		 * @returns{void}
 		 */
 		#handleEventsOnToolBar(e) {
+			const self = this;
+
 			const targetEl = /**@type{HTMLElement | null}*/ (e.target);
 			if (targetEl === null) {
 				console.error(
@@ -454,17 +456,17 @@
 						"Are you sure you would like to clear drawing, doing so will perminently delete it?",
 					);
 					if (result === true) {
-						this.#drawing.strokes = [];
+						self.#drawing.strokes = [];
 						try {
 							localStorage.setItem(
-								this.#drawing.name,
-								JSON.stringify(this.#drawing),
+								self.#drawing.name,
+								JSON.stringify(self.#drawing),
 							);
 						} catch (e) {
 							console.error(e);
 							return;
 						}
-						this.ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+						self.ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
 					}
 
 					break;
@@ -523,6 +525,117 @@
 							// You current have a drawing with the name as the file you just uploaded, would you like to keep both?
 							// would you like to replace the old file with the file you just uploaded?
 							// please select a new name for the uploaded file ( must not match any of the keys in local storage you must verify the inputed name )
+
+							let confirmOne = undefined;
+							while (!confirmOne) {
+								confirmOne = window.confirm(
+									"You current have a drawing with the same name as the uploaded drawing, would you like to keep both of them?",
+								);
+							}
+
+							if (confirmOne === true) {
+								/**@type{string | null}*/
+								let promptOne = null;
+								while (
+									!promptOne ||
+									promptOne.trim() === "" ||
+									localStorage.getItem(promptOne) !== null
+								) {
+									promptOne = window.prompt(
+										"Choose a new name for the uploaded drawing",
+									);
+								}
+
+								verifiedFile.name = promptOne;
+								try {
+									localStorage.setItem(verifiedFile.name, file);
+								} catch (e) {
+									console.error(e);
+									return;
+								}
+
+								self.#drawing.name = verifiedFile.name;
+								self.#drawing.strokes = verifiedFile.strokes;
+
+								self.#currentDrawing = promptOne;
+								try {
+									localStorage.setItem(
+										localStorageKeys.currentDrawing,
+										self.#currentDrawing,
+									);
+								} catch (e) {
+									console.error(e);
+									return;
+								}
+
+								self.#redrawCanvas();
+								return;
+							} else {
+								let confirmTwo;
+								while (!confirmTwo) {
+									confirmTwo = window.confirm(
+										"Would you like to replace the old drawing with the drawing you just uploaded? (Doing this will permanently default the old drawing)",
+									);
+								}
+
+								if (confirmTwo === true) {
+									try {
+										localStorage.setItem(verifiedFile.name, file);
+									} catch (e) {
+										console.error(e);
+									}
+
+									return;
+								} else {
+									let confirmThree;
+									while (!confirmThree) {
+										confirmTwo = window.confirm(
+											"Would you like to replace the old drawing with the drawing you just uploaded? (Doing this will permanently default the old drawing)",
+										);
+									}
+
+									if (confirmThree === true) {
+										/**@type{string | null}*/
+										let promptOne = null;
+										while (
+											!promptOne ||
+											promptOne.trim() === "" ||
+											localStorage.getItem(promptOne) !== null
+										) {
+											promptOne = window.prompt(
+												"Choose a new name for the uploaded drawing",
+											);
+										}
+
+										verifiedFile.name = promptOne;
+										try {
+											localStorage.setItem(verifiedFile.name, file);
+										} catch (e) {
+											console.error(e);
+											return;
+										}
+
+										self.#drawing.name = verifiedFile.name;
+										self.#drawing.strokes = verifiedFile.strokes;
+
+										self.#currentDrawing = promptOne;
+										try {
+											localStorage.setItem(
+												localStorageKeys.currentDrawing,
+												self.#currentDrawing,
+											);
+										} catch (e) {
+											console.error(e);
+											return;
+										}
+
+										self.#redrawCanvas();
+										return;
+									} else {
+										return;
+									}
+								}
+							}
 						}
 					};
 
