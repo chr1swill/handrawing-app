@@ -224,8 +224,11 @@
 			);
 
 			window.addEventListener("resize", () => {
-				this.#resizeCanvas();
-				this.#redrawCanvas();
+				const tm = setTimeout(() => {
+					this.#resizeCanvas();
+					this.#redrawCanvas();
+					clearTimeout(tm);
+				}, 500);
 			});
 
 			window.addEventListener("load", () => {
