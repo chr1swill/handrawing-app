@@ -61,6 +61,9 @@
 			}
 
 			this.canvas = canvas;
+			this.canvas.style.touchAction = "none"; // Prevent touch actions like zooming and scrolling
+			this.canvas.style.userSelect = "none"; // Disable text selection
+
 			this.ctx = ctx;
 			this.toolBar = toolBar;
 			this.#drawing.name = name;
