@@ -34,6 +34,7 @@
 			"
 		>
 			<button
+				data-button-clear-canvas
 				id="clearCanvas"
 				style="
 					display: flex;
@@ -84,6 +85,7 @@
 				"
 			>
 				<input
+					data-input-upload-file
 					id="uploadFile"
 					type="file"
 					accept="*.txt"
@@ -107,6 +109,7 @@
 			</label>
 
 			<button
+				data-button-save-file
 				id="saveToFile"
 				style="
 					display: flex;
@@ -191,7 +194,11 @@
 						right: 0;
 					"
 				>
-					<fieldset style="all: unset" class="mode-container">
+					<fieldset
+						data-slider-pencil
+						style="all: unset"
+						class="mode-container"
+					>
 						<input type="radio" name="mode" id="mode-pencil" checked />
 						<label data-slider-mode="pencil" for="mode-pencil">
 							<span style="display: none">button to select pencil mode</span>
@@ -211,7 +218,11 @@
 							</svg>
 						</label>
 					</fieldset>
-					<fieldset style="all: unset" class="mode-container">
+					<fieldset
+						data-slider-eraser
+						style="all: unset"
+						class="mode-container"
+					>
 						<input type="radio" name="mode" id="mode-eraser" />
 						<label data-slider-mode="eraser" for="mode-eraser">
 							<span style="display: none">button to select eraser mode</span>
@@ -323,6 +334,7 @@
 			>
 				<label for="selectStokeWeight">Stroke weight:</label>
 				<input
+					data-input-stroke-weight
 					id="selectStrokeWeight"
 					name="selectStrokeWeight"
 					type="range"

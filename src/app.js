@@ -13,6 +13,15 @@
 		currentDrawing: "currentDrawing",
 	});
 
+	const eventdataIdJumpTable = Object.freeze({
+		"data-button-clear-canva": function () {},
+		"data-input-upload-file": function () {},
+		"data-button-save-file": function () {},
+		"data-slider-pencil": function () {},
+		"data-slider-eraser": function () {},
+		"data-input-stroke-weight": function () {},
+	});
+
 	class DrawingApp {
 		/**@type{number}*/
 		#strokeWeight = 5;
@@ -448,6 +457,7 @@
 		}
 
 		#handleChangeEventOnToolBar() {}
+
 		#handleClickEventOnToolBar() {}
 	}
 
