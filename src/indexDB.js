@@ -228,8 +228,40 @@
 						return;
 					}
 
-					this.#canvasRect = canvas.getBoundingClientRect();
-					await store.put(this.#canvasRect, IDBKeys.canvasRect);
+					try {
+						const storedCanvasRect = /**@type{IDBRequest<DOMRect>}*/ (
+							store.get(IDBKeys.canvasRect)
+						);
+
+						storedCanvasRect.onerror = function () {
+							self.#canvasRect = self.canvas.getBoundingClientRect();
+
+							const updateCanvasRect = store.put(
+								self.#canvasRect,
+								IDBKeys.canvasRect,
+							);
+
+							updateCanvasRect.onerror = function () {
+								console.error(updateCanvasRect.error);
+								return;
+							};
+
+							updateCanvasRect.onsuccess = function () {
+								console.log(
+									"Updated value of the canvas rect: ",
+									updateCanvasRect.result,
+								);
+								return;
+							};
+						};
+
+						storedCanvasRect.onsuccess = function () {
+							self.#canvasRect = storedCanvasRect.result;
+						};
+					} catch (e) {
+						console.error(e);
+						return;
+					}
 
 					let storedDrawing = await store.get(IDBKeys.currentDrawing);
 					if (storedDrawing === undefined) {
