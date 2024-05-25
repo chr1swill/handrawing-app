@@ -540,6 +540,13 @@
 				case "inputUploadFile" in targetedDataAttribute:
 					break;
 				case "buttonSaveFile" in targetedDataAttribute:
+					let fileName;
+					if (!("showSaveFilePicker" in window)) {
+						while (!fileName || fileName.length < 1 || fileName.trim() === "") {
+							fileName = window.prompt("Choose a name for your file");
+						}
+					}
+					this.#saveToFile(fileName);
 					break;
 				case "sliderPencil" in targetedDataAttribute:
 					break;
@@ -555,6 +562,85 @@
 						targetEl.dataset,
 					);
 					break;
+			}
+		}
+
+		/**
+		 * @param{string | undefined} fileName
+		 */
+		async #saveToFile(fileName) {
+			const self = this;
+			if ("showSaveFilePicker" in window) {
+				try {
+					//@ts-ignore
+					const fileHandle = await window.showSaveFilePicker({
+						types: [
+							{
+								description: "TEXT data",
+								accept: { "application/json": [".json"] },
+							},
+						],
+					});
+					//@ts-ignore
+					const saveFile = await (async function writeFile(fileHandle) {
+						//@ts-ignore
+						const writable = await fileHandle.createWritable();
+						const data = localStorage.getItem(self.#currentDrawing);
+						if (data === null) {
+							console.error(
+								`There is no data in localStorage key: ${self.#currentDrawing}`,
+							);
+							alert(
+								"Could not save file, the name is not in localStorage currently",
+							);
+							return;
+						}
+
+						let wroteData;
+						try {
+							wroteData = await writable.write(data);
+						} catch (e) {
+							wroteData = null;
+							console.error(e);
+							return;
+						} finally {
+							writable.close();
+						}
+
+						if (wroteData === null) {
+							console.error("Failed to write data");
+							return;
+						}
+
+						alert("Drawing save successfully!");
+					})();
+				} catch (e) {
+					console.error(e);
+					return;
+				}
+			} else {
+				console.warn("FileSystem API no supported, using fallback");
+				const data = localStorage.getItem(self.#currentDrawing);
+				if (data === null) {
+					console.error(
+						`There is no data in localStorage key: ${self.#currentDrawing}`,
+					);
+					alert(
+						"Could not save file, the name is not in localStorage currently",
+					);
+					return;
+				}
+
+				const blob = new Blob([data], { type: "application/json" });
+				const url = URL.createObjectURL(blob);
+				const a = document.createElement("a");
+				a.href = url;
+				a.style.display = "none";
+				a.download = `${fileName}.json`;
+				document.body.appendChild(a);
+				a.click();
+				document.body.removeChild(a);
+				URL.revokeObjectURL(url);
 			}
 		}
 	}
