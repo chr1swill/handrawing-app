@@ -229,7 +229,7 @@
 				{ passive: false },
 			);
 			this.canvas.addEventListener(
-				"mouseout",
+				"mouseleave",
 				(e) => {
 					e.preventDefault();
 					this.#stopDrawing();
