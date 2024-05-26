@@ -1,3 +1,5 @@
+const DEBUG_MODE = true;
+
 (function () {
 	const DrawingAction = Object.freeze({
 		DRAW: "0",
@@ -301,12 +303,30 @@
 
 			this.#position = point;
 			this.#points.push(this.#position);
+			if (DEBUG_MODE === true) {
+				console.log("\n");
+				console.log("FROM: DrawingApp.#getPositions end");
+				console.log("\n");
+				console.log("event time : ", event.timeStamp);
+				console.log("event target", event.target);
+				console.log("pointer type: ", event.pointerType);
+				console.log("pointer id: ", event.pointerId);
+			}
 		}
 
 		/**
 		 * @param{TouchEvent} event
 		 */
 		#startDrawing(event) {
+			if (DEBUG_MODE === true) {
+				console.log("\n");
+				console.log("FROM: DrawingApp.#startDrawing start");
+				console.log("\n");
+				console.log("event time : ", event.timeStamp);
+				console.log("event target", event.target);
+				console.log("pointer type: ", event.pointerType);
+				console.log("pointer id: ", event.pointerId);
+			}
 			this.#isDrawing = true;
 			this.#getPostions(event);
 		}
