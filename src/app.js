@@ -213,6 +213,39 @@
 			this.ctx.lineCap = "round";
 
 			this.canvas.addEventListener(
+				"mousedown",
+				(e) => {
+					e.preventDefault();
+					this.#startDrawing(e);
+				},
+				{ passive: false },
+			);
+			this.canvas.addEventListener(
+				"mouseup",
+				(e) => {
+					e.preventDefault();
+					this.#stopDrawing();
+				},
+				{ passive: false },
+			);
+			this.canvas.addEventListener(
+				"mouseout",
+				(e) => {
+					e.preventDefault();
+					this.#stopDrawing();
+				},
+				{ passive: false },
+			);
+			this.canvas.addEventListener(
+				"mousemove",
+				(e) => {
+					e.preventDefault();
+					this.#draw(e);
+				},
+				{ passive: false },
+			);
+
+			this.canvas.addEventListener(
 				"touchstart",
 				(e) => {
 					e.preventDefault();
@@ -283,30 +316,46 @@
 		}
 
 		/**
-		 * @param{TouchEvent} event
+		 * @param{TouchEvent | MouseEvent} event
 		 */
 		#getPostions(event) {
 			/**@type{PointT}*/
-			const point = {
-				x:
-					(((event.touches[0].clientX - this.#canvasRect.left) /
-						this.#canvasRect.width) *
-						this.canvas.width) /
-					this.#screenRatio,
+			let point;
+			if (event.constructor.name === "TouchEvent") {
+				//@ts-ignore
+				const e = /**@type{TouchEvent.touches}*/ (event.touches[0]);
+				point = {
+					x:
+						(((e.clientX - this.#canvasRect.left) / this.#canvasRect.width) *
+							this.canvas.width) /
+						this.#screenRatio,
 
-				y:
-					(((event.touches[0].clientY - this.#canvasRect.top) /
-						this.#canvasRect.height) *
-						this.canvas.height) /
-					this.#screenRatio,
-			};
+					y:
+						(((e.clientY - this.#canvasRect.top) / this.#canvasRect.height) *
+							this.canvas.height) /
+						this.#screenRatio,
+				};
+			} else {
+				const e = /**@type{MouseEvent}*/ (event);
+				point = {
+					x:
+						(((e.clientX - this.#canvasRect.left) / this.#canvasRect.width) *
+							this.canvas.width) /
+						this.#screenRatio,
+
+					y:
+						(((e.clientY - this.#canvasRect.top) / this.#canvasRect.height) *
+							this.canvas.height) /
+						this.#screenRatio,
+				};
+			}
 
 			this.#position = point;
 			this.#points.push(this.#position);
 		}
 
 		/**
-		 * @param{TouchEvent} event
+		 * @param{TouchEvent | MouseEvent} event
 		 */
 		#startDrawing(event) {
 			this.#isDrawing = true;
@@ -360,7 +409,7 @@
 			}
 		}
 
-		/**@param{TouchEvent} event*/
+		/**@param{TouchEvent | MouseEvent} event*/
 		#draw(event) {
 			if (!this.#isDrawing) return;
 			this.ctx.lineWidth = this.#strokeWeight;
