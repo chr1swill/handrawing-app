@@ -1,4 +1,4 @@
-const DEBUG_MODE = true;
+const DEBUG_MODE = false;
 
 (function () {
 	const DrawingAction = Object.freeze({
@@ -45,6 +45,9 @@ const DEBUG_MODE = true;
 
 		/**@type{DrawingT}*/
 		#drawing = { name: "", strokes: [] };
+
+		/**@type{number}*/
+		#pointerId = 0;
 
 		/**
 		 * All params are assumed to be null checked
@@ -248,10 +251,12 @@ const DEBUG_MODE = true;
 			);
 
 			this.canvas.addEventListener("contextmenu", function (e) {
+				console.log("firred context menu event");
 				e.preventDefault();
 			});
 
 			this.canvas.addEventListener("dblclick", function (e) {
+				console.log("firred db click event");
 				e.preventDefault();
 			});
 
@@ -325,11 +330,15 @@ const DEBUG_MODE = true;
 				console.log("pointer type: ", event.pointerType);
 				console.log("pointer id: ", event.pointerId);
 			}
+			this.#pointerId = event.pointerId;
 			this.#isDrawing = true;
 			this.#getPostions(event);
+			//@ts-ignore
+			event.target.releasePointerCapture(this.#pointerId);
 		}
 
 		#stopDrawing() {
+			this.canvas.releasePointerCapture(this.#pointerId);
 			this.#isDrawing = false;
 
 			/**@type{StrokeT}*/
@@ -346,29 +355,24 @@ const DEBUG_MODE = true;
 			try {
 				/**@type{string | null}*/
 				const currentDrawing = localStorage[this.#currentDrawing];
-				console.log("currentDrawing: ", currentDrawing);
 				if (currentDrawing === null) {
 					throw new ReferenceError(
 						"Could not access current drawing in the way you are attempting to do so",
 					);
 				}
+
 				if (currentDrawing.slice(currentDrawing.length - 3) === "[]}") {
 					localStorage[this.#currentDrawing] =
 						currentDrawing.slice(0, currentDrawing.length - 2) +
 						newStrokeAsString +
 						"]}";
 				} else {
-					console.log(
-						"current slice: ",
-						currentDrawing.slice(0, currentDrawing.length - 2),
-					);
 					localStorage[this.#currentDrawing] =
 						currentDrawing.slice(0, currentDrawing.length - 2) +
 						"," +
 						newStrokeAsString +
 						"]}";
 				}
-				//localStorage.setItem(this.#drawing.name, JSON.stringify(this.#drawing));
 			} catch (e) {
 				console.error(e);
 				console.warn(
