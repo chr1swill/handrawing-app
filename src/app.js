@@ -213,7 +213,7 @@
 			this.ctx.lineCap = "round";
 
 			this.canvas.addEventListener(
-				"pointerdown",
+				"touchstart",
 				(e) => {
 					e.preventDefault();
 					this.#startDrawing(e);
@@ -221,7 +221,7 @@
 				{ passive: false },
 			);
 			this.canvas.addEventListener(
-				"pointerup",
+				"touchend",
 				(e) => {
 					e.preventDefault();
 					this.#stopDrawing();
@@ -229,7 +229,7 @@
 				{ passive: false },
 			);
 			this.canvas.addEventListener(
-				"pointercancel",
+				"touchcancel",
 				(e) => {
 					e.preventDefault();
 					this.#stopDrawing();
@@ -237,7 +237,7 @@
 				{ passive: false },
 			);
 			this.canvas.addEventListener(
-				"pointermove",
+				"touchmove",
 				(e) => {
 					e.preventDefault();
 					this.#draw(e);
@@ -281,18 +281,20 @@
 		}
 
 		/**
-		 * @param{PointerEvent} event
+		 * @param{TouchEvent} event
 		 */
 		#getPostions(event) {
 			/**@type{PointT}*/
 			const point = {
 				x:
-					(((event.clientX - this.#canvasRect.left) / this.#canvasRect.width) *
+					(((event.touches[0].clientX - this.#canvasRect.left) /
+						this.#canvasRect.width) *
 						this.canvas.width) /
 					this.#screenRatio,
 
 				y:
-					(((event.clientY - this.#canvasRect.top) / this.#canvasRect.height) *
+					(((event.touches[0].clientY - this.#canvasRect.top) /
+						this.#canvasRect.height) *
 						this.canvas.height) /
 					this.#screenRatio,
 			};
@@ -302,7 +304,7 @@
 		}
 
 		/**
-		 * @param{PointerEvent} event
+		 * @param{TouchEvent} event
 		 */
 		#startDrawing(event) {
 			this.#isDrawing = true;
