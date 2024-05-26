@@ -326,42 +326,28 @@
 			try {
 				/**@type{string | null}*/
 				const currentDrawing = localStorage[this.#currentDrawing];
+				console.log("currentDrawing: ", currentDrawing);
 				if (currentDrawing === null) {
 					throw new ReferenceError(
 						"Could not access current drawing in the way you are attempting to do so",
 					);
 				}
-
-				localStorage[this.#currentDrawing] =
-					currentDrawing.slice(0, currentDrawing.length - 2) +
-					"," +
-					newStrokeAsString +
-					"]}";
-				console.log(
-					"drawing before new point: ",
-					currentDrawing.slice(0, currentDrawing.length - 2),
-				);
-				console.log("\n");
-				console.log(
-					"Drawing with the comma: ",
-					currentDrawing.slice(0, currentDrawing.length - 2) + ",",
-				);
-				console.log("\n");
-				console.log(
-					"Drawing with the new stroke added: ",
-					currentDrawing.slice(0, currentDrawing.length - 2) +
-						"," +
-						newStrokeAsString,
-				);
-				console.log("\n");
-				console.log(
-					"The whole Drawing: ",
-					currentDrawing.slice(0, currentDrawing.length - 2) +
+				if (currentDrawing.slice(currentDrawing.length - 3) === "[]}") {
+					localStorage[this.#currentDrawing] =
+						currentDrawing.slice(0, currentDrawing.length - 2) +
+						newStrokeAsString +
+						"]}";
+				} else {
+					console.log(
+						"current slice: ",
+						currentDrawing.slice(0, currentDrawing.length - 2),
+					);
+					localStorage[this.#currentDrawing] =
+						currentDrawing.slice(0, currentDrawing.length - 2) +
 						"," +
 						newStrokeAsString +
-						"]}",
-				);
-				console.log("\n");
+						"]}";
+				}
 				//localStorage.setItem(this.#drawing.name, JSON.stringify(this.#drawing));
 			} catch (e) {
 				console.error(e);
