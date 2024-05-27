@@ -27,6 +27,65 @@
 		></canvas>
 
 		<div
+			data-state-control
+			style="
+				position: absolute;
+				top: 5%;
+				right: 5%;
+				display: flex;
+				flex-direction: row;
+				gap: 12px;
+			"
+		>
+			<button
+				data-button-undo
+				style="
+					display: flex;
+					gap: 8px;
+					align-items: center;
+					justify-content: center;
+					background: lightgray;
+					color: black;
+					padding: 8px;
+					border: none;
+					border-radius: 10px;
+					font-size: 16px;
+					font-weight: bold;
+				"
+			>
+				<img
+					data-button-undo
+					src="./assets/undo.svg"
+					alt="icon for undo button"
+				/>
+				<span>Undo</span>
+			</button>
+			<button
+				data-button-redo
+				style="
+					display: flex;
+					gap: 8px;
+					align-items: center;
+					justify-content: center;
+					background: lightgray;
+					color: black;
+					padding: 8px;
+					border: none;
+					border-radius: 10px;
+					font-size: 16px;
+					font-weight: bold;
+				"
+			>
+				<span>Redo</span>
+				<img
+					data-button-redo
+					src="./assets/redo.svg"
+					alt="icon for redo button"
+				/>
+			</button>
+		</div>
+
+		<div
 			data-tool-bar
 			style="
 				position: absolute;
