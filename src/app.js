@@ -44,6 +44,9 @@
 		/**@type{DrawingT}*/
 		#drawing = { name: "", strokes: [] };
 
+		/**@type{StrokeT[]}*/
+		#undoneStrokes = [];
+
 		/**
 		 * All params are assumed to be null checked
 		 * before being pass into the class
@@ -299,6 +302,83 @@
 
 			this.toolBar.addEventListener("click", (e) => {
 				this.#handleEventsOnToolBar(e);
+			});
+
+			const undoRedoButtonContainer = document.querySelector(
+				"[data-container-undo-redo]",
+			);
+			if (undoRedoButtonContainer === null) {
+				throw new ReferenceError(
+					"Could not find element with data attribute: data-container-undo-redo",
+				);
+			}
+
+			if (this.#drawing.strokes.length > 0) {
+				const undoButtonImg = /**@type{HTMLImageElement | null}*/ (
+					document.querySelector("[data-button-undo] img")
+				);
+				const redoButtonImg = /**@type{HTMLImageElement | null}*/ (
+					document.querySelector("[data-button-redo] img")
+				);
+				if (undoButtonImg === null || redoButtonImg === null) {
+					throw new ReferenceError(
+						"Could not find img elements with data attribute: data-button-undo data-button-redo",
+					);
+				}
+
+				undoButtonImg.style.opacity = "50%";
+				redoButtonImg.style.opacity = "50%";
+			}
+			undoRedoButtonContainer.addEventListener("click", (e) => {
+				e.preventDefault();
+				const targetElement = /**@type{HTMLElement | null}*/ (e.target);
+				if (targetElement === null) {
+					console.error(
+						"An attempt to access the element targeted by the click event returned a null value",
+					);
+					return;
+				}
+
+				const undoButtonImg = /**@type{HTMLImageElement | null}*/ (
+					document.querySelector("[data-button-undo] img")
+				);
+				const redoButtonImg = /**@type{HTMLImageElement | null}*/ (
+					document.querySelector("[data-button-redo] img")
+				);
+				if (undoButtonImg === null || redoButtonImg === null) {
+					console.error(
+						"Could not find img elements with data attribute: data-button-undo data-button-redo",
+					);
+					return;
+				}
+				switch (true) {
+					case "buttonUndo" in targetElement.dataset:
+                        //
+                        // do something like this to listen for events on the undone strokes array is a potentail solution
+                        //
+                        //https://learnersbucket.com/examples/interview/array-with-event-listeners-in-javascript/#google_vignette
+                        //
+                        //
+                        //
+						if (this.#drawing.strokes.length < 1) {
+							undoButtonImg.style.opacity = "50%";
+							redoButtonImg.style.opacity = "50%";
+							this.#undoneStrokes = [];
+						} else {
+							undoButtonImg.style.opacity = "100%";
+							redoButtonImg.style.opacity = "100%";
+                            this.#drawing.strokes.pop()
+						}
+
+						break;
+					case "buttonRedo" in targetElement.dataset:
+						break;
+					default:
+						console.error(
+							"There is not case set up to handle event on the targeted element: ",
+							targetElement,
+						);
+				}
 			});
 
 			window.addEventListener("resize", () => {
