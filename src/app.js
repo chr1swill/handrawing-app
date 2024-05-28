@@ -232,14 +232,6 @@
 				{ passive: false },
 			);
 			this.canvas.addEventListener(
-				"mouseleave",
-				(e) => {
-					e.preventDefault();
-					this.#stopDrawing();
-				},
-				{ passive: false },
-			);
-			this.canvas.addEventListener(
 				"mousemove",
 				(e) => {
 					e.preventDefault();
@@ -258,14 +250,6 @@
 			);
 			this.canvas.addEventListener(
 				"touchend",
-				(e) => {
-					e.preventDefault();
-					this.#stopDrawing();
-				},
-				{ passive: false },
-			);
-			this.canvas.addEventListener(
-				"touchcancel",
 				(e) => {
 					e.preventDefault();
 					this.#stopDrawing();
@@ -449,16 +433,18 @@
 				}
 
 				if (currentDrawing.slice(currentDrawing.length - 3) === "[]}") {
-					localStorage[this.#currentDrawing] =
+					const forStorage =
 						currentDrawing.slice(0, currentDrawing.length - 2) +
 						newStrokeAsString +
 						"]}";
+					localStorage[this.#currentDrawing] = forStorage;
 				} else {
-					localStorage[this.#currentDrawing] =
+					const forStorage =
 						currentDrawing.slice(0, currentDrawing.length - 2) +
 						"," +
 						newStrokeAsString +
 						"]}";
+					localStorage[this.#currentDrawing] = forStorage;
 				}
 			} catch (e) {
 				console.error(e);
