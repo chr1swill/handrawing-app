@@ -353,24 +353,6 @@
 				}
 				switch (true) {
 					case "buttonUndo" in targetElement.dataset:
-						//
-						// do something like this to listen for events on the undone strokes array is a potentail solution
-						//
-						//https://learnersbucket.com/examples/interview/array-with-event-listeners-in-javascript/#google_vignette
-						//
-						//
-						//
-						//if (this.#drawing.strokes.length < 1) {
-						//	undoButtonImg.style.opacity = "50%";
-						//	redoButtonImg.style.opacity = "50%";
-						//	this.#undoneStrokes = [];
-						//} else {
-						//	undoButtonImg.style.opacity = "100%";
-						//	redoButtonImg.style.opacity = "100%";
-						//    this.#drawing.strokes.pop()
-						//}
-						//
-
 						break;
 					case "buttonRedo" in targetElement.dataset:
 						break;
