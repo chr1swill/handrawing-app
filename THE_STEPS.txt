@@ -1,2 +1,4 @@
-- make tool bar > color picker, add pen size picker
-- improve the proformance so you can make it even better
+make object eraser > touching part of a stroke will remove the entire stroke
+add undo functionality
+add redo functionality
+add a ui to easily create, change to, and delete drawing in your storage
